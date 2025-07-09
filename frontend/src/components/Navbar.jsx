@@ -1,4 +1,4 @@
-
+import Logo from "../assets/Logo.png";
 import { Link } from "react-router-dom";
 import {
   FaShoppingCart,
@@ -9,7 +9,6 @@ import {
   FaSearch,
 } from "react-icons/fa";
 import { MdContactSupport } from "react-icons/md";
-import { BiLogoOkRu  } from "react-icons/bi";
 import { useState } from "react";
 
 
@@ -33,8 +32,8 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link to={"/"} onClick={ScrollToTop}>
-            <BiLogoOkRu className="text-5xl text-green-900" />
-              {/* <img src={Logo} alt="Logo" className="h-24 w-auto" /> */}
+            
+              <img src={Logo} alt="Logo" className="h-20 w-auto" />
             </Link>
           </div>
 
@@ -56,22 +55,22 @@ export default function Navbar() {
           <div className="hidden md:flex space-x-6 items-center">
             <Link to={"/"}onClick={ScrollToTop}
              className="text-gray-700 hover:text-green-600 ">
-              <FaHome className="text-xl" />
+              <FaHome className="text-3xl" />
             </Link>
             <Link to={"/cart"} className="text-gray-700 hover:text-green-600 ">
-              <FaShoppingCart className="text-xl" />
+              <FaShoppingCart className="text-3xl" />
             </Link>
              <Link
               to={"/contact"}
               className="flex items-center gap-1 text-gray-700 hover:text-green-600"
             >
-              <MdContactSupport className="text-xl" />
+              <MdContactSupport className="text-3xl" />
             </Link>
             <Link
               to={"/login"}
               className="flex items-center gap-1 text-gray-700 hover:text-green-600"
             >
-              <FaRegUserCircle className="text-xl" />
+              <FaRegUserCircle className="text-3xl" />
             </Link>
           </div>
 
