@@ -74,7 +74,7 @@ const Hero = () => {
           transition={{ duration: 0.5 }}
           className="relative z-10 md:flex items-center justify-between  "
         >
-          <div className="md:w-1/2 space-y-4 ml-40">
+          <div className="md:w-1/2 space-y-4  sm:ml-40  md:ml-40 ">
             <h1 className="text-4xl md:text-5xl font-bold">
               {slides[current].title}
             </h1>
@@ -83,7 +83,7 @@ const Hero = () => {
               Shop Now
             </button>
           </div>
-          <div className="md:w-1/2 mt-8 md:mt-0 mr-20 flex justify-center items-center">
+          <div className="md:w-1/2 mt-8 md:mt-0 sm:mr-20 md:mr-20 flex justify-center items-center">
             <img
               src={slides[current].image}
               alt="Hero Slide"
@@ -103,7 +103,7 @@ const Hero = () => {
       </button>
       <button
         onClick={() => setCurrent((current + 1) % slides.length)}
-        className="absolute top-1/2 right-4 transform -translate-y-1/2 text-4xl font-bold text-white hover:text-green-400 z-20"
+        className="absolute top-1/2 right-4  text-4xl font-bold text-white hover:text-green-400 z-20"
       >
         <BsArrowRightSquareFill />
       </button>
