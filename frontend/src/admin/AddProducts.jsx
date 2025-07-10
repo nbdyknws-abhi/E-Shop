@@ -2,10 +2,37 @@
 import React from "react";
 import Slidebar from "./Slidebar";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const AddProducts = () => {
   const navigate = useNavigate();
+  const [product, setProduct] = useState({Pname:"",Price:"",Cat:""});
 
+  async function handleForm(e) {
+    e.preventDefault();
+    console.log(product);
+    try { 
+      const response=await fetch("api/add-product",{
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(product),
+      })
+      const  result =await response.json()
+      if(response.ok){
+        toast.success(result.message);
+        navigate("/admin/products");
+      }else{
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+  function handleChange(e) {
+    setProduct({ ...product, [e.target.name]: e.target.value });
+  }
   return (
     <div className="flex mt-16">
       <Slidebar />
@@ -21,7 +48,7 @@ const AddProducts = () => {
         >
           Back
         </button>
-        <form
+        <form onSubmit={handleForm}
           action=""
           className="bg-white shadow-md rounded-xl p-6 max-w-3xl mx-auto space-y-6"
         >
@@ -30,8 +57,10 @@ const AddProducts = () => {
           </label>
           <input
             type="text"
-            name=""
+            name="Pname"
             id=""
+            value={product.Pname}
+            onChange={handleChange}
             placeholder="e.g Fresh Fruits"
             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
@@ -40,8 +69,10 @@ const AddProducts = () => {
           </label>
           <input
             type="number"
-            name=""
+            name="Price"
             id=""
+            value={product.Price}
+            onChange={handleChange}
             placeholder="e.g 999"
             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
@@ -50,18 +81,20 @@ const AddProducts = () => {
             Categorys
           </label>
           <select
-            name=""
+            name="Cat"
             id=""
+            value={product.Cat}
+            onChange={handleChange}
             className="w-full px-4 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             <option value="">---Select---</option>
-            <option value="">Cafe</option>
-            <option value="">Home</option>
-            <option value="">Toys</option>
-            <option value="">Fresh</option>
-            <option value="">Electronics</option>
-            <option value="">Mobile</option>
-            <option value="">Beauty</option>
+            <option value="Cafe">Cafe</option>
+            <option value="Home">Home</option>
+            <option value="Toys">Toys</option>
+            <option value="Fresh">Fresh</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Mobile">Mobile</option>
+            <option value="Beauty">Beauty</option>
           </select>
           <label htmlFor="" className="block text-gray-700 font-medium mb-1">
             Product Image
@@ -73,7 +106,8 @@ const AddProducts = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none "
           />
           <div className="text-right">
-            <button className="bg-purple-500 text-white px-6 py-2 rounded hover:bg-purple-700 transition">
+            <button type="submit"
+             className="bg-purple-500 text-white px-6 py-2 rounded hover:bg-purple-700 transition">
               Add Product
             </button>
           </div>

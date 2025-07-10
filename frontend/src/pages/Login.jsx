@@ -2,14 +2,40 @@ import React, { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ LoginEmail: "", LoginPass: "" });
 
-  const handleForm = (e) => {
+  async function handleForm(e) {
     e.preventDefault();
+    // Handle form submission
+    try {
+      const response = await fetch("/api/userdata", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+     if (response.ok) {
+        if (result.data && result.data.userEmail === "admin@gmail.com") {
+          navigate("/admin/");
+          toast.success("Hello Admin 👤");
+        } else {
+          toast.success(result.message);
+          navigate("/");
+        }
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred while logging in.");
+    }
   };
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

@@ -11,7 +11,7 @@ const AdminProducts = () => {
         <h1 className="text-3xl font-bold mb-6 text-gray-800">
           Manage Products 📊
         </h1>
-        <Link to={"/admin/add-product"}>
+        <Link to={"/admin/addproduct"}>
           <button className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 transition">
             <FaPlus /> Add Products
           </button>
