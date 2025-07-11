@@ -11,7 +11,7 @@ const addProductController = async(req,res)=>{
          ProductPrice: Price,
          ProductCat: Cat
      });
-     await newProduct.save();
+     await record.save();
      res.status(201).json({ message: "Product added successfully" });
     } catch (error) {
      console.error(error);

@@ -1,4 +1,3 @@
-
 import React from "react";
 import Slidebar from "./Slidebar";
 import { useNavigate } from "react-router-dom";
@@ -12,13 +11,14 @@ const AddProducts = () => {
   async function handleForm(e) {
     e.preventDefault();
     console.log(product);
-    try { 
-      const response=await fetch("api/add-product",{
+    try {
+      const response = await fetch("/api/add-product", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(product),
       })
-      const  result =await response.json()
+      const  result =await response.json();
+      console.log(result);
       if(response.ok){
         toast.success(result.message);
         navigate("/admin/products");
