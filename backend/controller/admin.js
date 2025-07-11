@@ -12,7 +12,7 @@ const addProductController = async(req,res)=>{
          ProductCat: Cat
      });
      await record.save();
-     res.status(201).json({ message: "Product added successfully" });
+     res.status(200).json({ message: "Product added successfully" });
     } catch (error) {
      console.error(error);
      res.status(500).json({ message: "Internal server error" });
