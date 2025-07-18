@@ -8,6 +8,16 @@ api.get("/",(req,res)=>{
 api.post("/regdata", UserController.regDataController);
 api.post("/userdata", UserController.loginDataController);
 api.post("/add-product",AdminController.addProductController);
+api.get("/getproducts",AdminController.getProductsController);
+api.delete("/deleteproduct/:id", AdminController.deleteProductController);
+api.get("/fetchdata/:abc", AdminController.editProductsController);
+api.put("/productupdate/:abc",AdminController.updateProductController)
+api.get("/allproducts", UserController.getAllProductsController);
+api.post("/userquery", UserController.userQueryController);
+api.get("/query/reply", AdminController.replyQueryController);
+api.delete("/deletequery/:abc", AdminController.deleteQueryController);
+api.get("/getquery/:abc", AdminController.fetchQueryController);
+api.post("/queryreply/:abc", AdminController.queryReplyController);
 
 
 module.exports=api;

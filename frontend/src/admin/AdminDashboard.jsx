@@ -1,7 +1,22 @@
 import React from "react";
 import Slidebar from "./Slidebar";
+import { useState,useEffect } from "react";
 
 const AdminDashboard = () => {
+  const [products, setProducts] = useState([]);
+  async function getProducts () {
+    try {
+        const response = await fetch("/api/getproducts" )
+        const result= await response.json();
+        setProducts(result.data);
+        
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    useEffect(() => {
+      getProducts();
+    }, []);
   return (
     <div className="flex mt-16">
       <Slidebar />
@@ -14,7 +29,9 @@ const AdminDashboard = () => {
             <h2 className="text-xl font-semibold  text-gray-700">
               Total Products
             </h2>
-            <p className="text-3xl mt-3 font-bold text-green-700">32</p>
+            <p className="text-3xl mt-3 font-bold text-green-700">
+              {products.length}
+            </p>
           </div>
         </div>
       </div>

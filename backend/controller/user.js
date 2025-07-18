@@ -1,4 +1,6 @@
 const userCollection = require("../model/user");
+const productCollection = require("../model/product");
+const queryCollection =require("../model/query")
 const bcrypt = require("bcrypt");
 
 const regDataController = async (req, res) => {
@@ -59,7 +61,36 @@ const loginDataController = async (req, res) => {
   }
 };
 
+const getAllProductsController = async(req, res) => {
+  try {
+    const record = await productCollection.find({ ProductStatus: "In-Stock" });
+    res.status(200).json({ data: record });
+  } catch (error) {
+    console.error("Error fetching products:", error.message);
+    res.status(500).json({ message: "Internal Server Error😓" });
+  }
+}
+const userQueryController = async(req,res)=>{
+  try {
+    const { userName, userEmail, userQuery } = req.body;
+    const record =  new queryCollection({
+      Name:userName,
+      Email:userEmail,
+      Query:userQuery,
+    });
+    await record.save();
+     res.status(200).json({ message: "Query Submitted Successfully" });
+  } catch (error) {
+    console.error("Error submitting query:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+    
+  }
+
+   
+}
 module.exports = {
   regDataController,
   loginDataController,
+  getAllProductsController,
+  userQueryController
 };

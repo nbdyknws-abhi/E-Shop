@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 const AddProducts = () => {
   const navigate = useNavigate();
   const [product, setProduct] = useState({Pname:"",Price:"",Cat:""});
+  const [pimage, setPimage] = useState("");
 
   async function handleForm(e) {
     e.preventDefault();
@@ -78,7 +79,7 @@ const AddProducts = () => {
           />
 
           <label htmlFor="" className="block text-gray-700 font-medium mb-1">
-            Categorys
+            Categories
           </label>
           <select
             name="Cat"
@@ -103,6 +104,8 @@ const AddProducts = () => {
             type="file"
             name=""
             id=""
+            onChange={(e) => setPimage(e.target.files[0])}
+            accept="image/*"
             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none "
           />
           <div className="text-right">
