@@ -31,7 +31,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link to={"/"} onClick={ScrollToTop}>
+            <Link  onClick={ScrollToTop}>
             
               <img src={Logo} alt="Logo" className="h-20 w-auto" />
             </Link>

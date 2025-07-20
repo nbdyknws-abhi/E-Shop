@@ -59,13 +59,27 @@ const updateProductController = async (req, res) => {
     
     const { Pname, Pprice, Pcat, Pstatus } = req.body;
     const id = req.params.abc;
-    await productCollection.findByIdAndUpdate(id, {
+    const updateData = {
       ProductName: Pname,
       ProductPrice: Pprice,
       ProductCat: Pcat,
       ProductStatus: Pstatus,
-      
-    });
+    };
+
+    if (req.file) {
+      updateData.ProductImage = req.file.filename;
+    }
+
+    // ✅ Correct way in Mongoose 7+
+    const updatedProduct = await productCollection.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
     res.status(200).json({ message: "Product updated successfully" });
   } catch (error) {
     console.error(error);

@@ -12,7 +12,7 @@ api.post("/add-product",uploads.single("pimage"),AdminController.addProductContr
 api.get("/getproducts",AdminController.getProductsController);
 api.delete("/deleteproduct/:id", AdminController.deleteProductController);
 api.get("/fetchdata/:abc", AdminController.editProductsController);
-api.put("/productupdate/:abc", AdminController.updateProductController);
+api.put("/productupdate/:abc", uploads.single("Pimage"), AdminController.updateProductController);
 api.get("/allproducts", UserController.getAllProductsController);
 api.post("/userquery", UserController.userQueryController);
 api.get("/query/reply", AdminController.replyQueryController);

@@ -7,25 +7,30 @@ import toast from "react-hot-toast";
 const EditProducts = () => {
   const navigate = useNavigate();
   const [edit, setEdit] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
+
 
   const { id } = useParams();
   async function handleForm(e) {
     try {
       e.preventDefault();
       
-      const formData={
-        Pname:edit.ProductName,
-        Pprice:edit.ProductPrice,
-        Pcat:edit.ProductCat,
-        Pstatus:edit.ProductStatus,
-        Pimage:edit.ProductImage
-      }
-      console.log(formData);
-      const response = await fetch(`/api/productupdate/${id}`,{
-        method:"PUT",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(formData)
-      })
+      const formData = new FormData();
+  formData.append("Pname", edit.ProductName);
+  formData.append("Pprice", edit.ProductPrice);
+  formData.append("Pcat", edit.ProductCat);
+  formData.append("Pstatus", edit.ProductStatus);
+
+  // ✅ Only append a new image if user selected it
+  if (selectedFile) {
+    formData.append("Pimage", selectedFile);
+  }
+
+  const response = await fetch(`/api/productupdate/${id}`, {
+    method: "PUT",
+    body: formData, // ✅ no JSON headers here
+  });
+
       const result = await response.json();
       if(response.ok){
         toast.success(result.message);
@@ -143,6 +148,7 @@ const EditProducts = () => {
             type="file"
             name=""
             id=""
+             onChange={(e) => setSelectedFile(e.target.files[0])}  // ✅ capture file
             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none "
           />
           <div className="text-right">
