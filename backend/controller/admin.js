@@ -126,7 +126,7 @@ const queryReplyController = async (req, res) => {
       secure: false, // true for 465, false for other ports
       auth: {
         user: "av022002@gmail.com",
-        pass: "xvyp ucoh ogzq guvu",
+        pass: "",
       },
     });
 
