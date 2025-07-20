@@ -3,6 +3,8 @@ const app=express();
 const dotenv= require("dotenv")
 dotenv.config()
 const apiRouter=require("./routes/api.js");
+
+app.use(express.static("public"));
 app.use(express.json());
 app.use("/api",apiRouter);
 const mongoose=require("mongoose")

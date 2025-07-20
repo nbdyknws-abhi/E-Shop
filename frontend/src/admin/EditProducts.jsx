@@ -17,7 +17,8 @@ const EditProducts = () => {
         Pname:edit.ProductName,
         Pprice:edit.ProductPrice,
         Pcat:edit.ProductCat,
-        Pstatus:edit.ProductStatus
+        Pstatus:edit.ProductStatus,
+        Pimage:edit.ProductImage
       }
       console.log(formData);
       const response = await fetch(`/api/productupdate/${id}`,{
@@ -60,7 +61,7 @@ const EditProducts = () => {
       <Slidebar />
       <div className="flex-1 p-10 bg-gray-50 min-h-screen">
         <h1 className="text-3xl font-bold mb-6 text-gray-800">
-          Edit Product 🤪
+          Edit Product 📋
         </h1>
         <button
           className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"

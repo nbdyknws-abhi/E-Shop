@@ -8,15 +8,19 @@ const AddProducts = () => {
   const navigate = useNavigate();
   const [product, setProduct] = useState({Pname:"",Price:"",Cat:""});
   const [pimage, setPimage] = useState("");
-
+  
   async function handleForm(e) {
     e.preventDefault();
-    console.log(product);
+  const formdata= new FormData();
+  formdata.append("Pname", product.Pname);
+  formdata.append("Price", product.Price);
+  formdata.append("Cat", product.Cat);
+  formdata.append("pimage", pimage);
+
     try {
       const response = await fetch("/api/add-product", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(product),
+        body: formdata,
       })
       const  result =await response.json();
       console.log(result);
@@ -28,7 +32,7 @@ const AddProducts = () => {
       }
     } catch (error) {
       console.log(error);
-      
+      toast.error(error.message);
     }
   }
   function handleChange(e) {
@@ -49,7 +53,7 @@ const AddProducts = () => {
         >
           Back
         </button>
-        <form onSubmit={handleForm}
+        <form onSubmit={handleForm} encType="multipart/form-data"
           action=""
           className="bg-white shadow-md rounded-xl p-6 max-w-3xl mx-auto space-y-6"
         >
@@ -102,7 +106,7 @@ const AddProducts = () => {
           </label>
           <input
             type="file"
-            name=""
+            name="pimage"
             id=""
             onChange={(e) => setPimage(e.target.files[0])}
             accept="image/*"

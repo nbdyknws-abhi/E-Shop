@@ -57,9 +57,9 @@ const AdminProducts = () => {
               className="bg-gradient-to-r from-slate-700 to-neutral-900 shadow rounded-lg p-4 hover:shadow-lg transition"
             >
               <img
-                src="asa"
+                src={`/uploads/${items.ProductImage}`}
                 alt="Product Image"
-                className="w-full h-40 object-cover rounded-md mb-4 border"
+                className="w-full h-40 object-contain rounded-md mb-4 border"
               />
               <h3 className="text-xl font-semibold text-neutral-100">
                 {items.ProductName}

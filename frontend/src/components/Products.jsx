@@ -33,9 +33,9 @@ const Products = () => {
             key={item._id}
             className="bg-gradient-to-r from-slate-700 to-neutral-900 shadow rounded-lg p-4 hover:shadow-lg transition">
             <img
-              src="jvgWW"
+              src={`/uploads/${item.ProductImage}`}
               alt="ProductImage"
-              className="w-full h-32 object-cover rounded"
+              className="w-full h-32 object-contain rounded "
             />
             <h3 className="mt-2 font-medium text-gray-200">
               {item.ProductName}

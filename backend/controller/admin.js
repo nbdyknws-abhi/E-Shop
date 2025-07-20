@@ -3,17 +3,22 @@ const productCollection = require("../model/product");
 const nodemailer = require("nodemailer");
 const addProductController = async (req, res) => {
   try {
+const Pimage = req.file.filename
+  
     const { Pname, Price, Cat } = req.body;
     if (!Pname || !Price || !Cat) {
       return res.status(400).json({ message: "All fields are required 😓" });
     }
+    
     const record = new productCollection({
       ProductName: Pname,
       ProductPrice: Price,
       ProductCat: Cat,
+      ProductImage: Pimage
     });
+    
     await record.save();
-    res.status(200).json({ message: "Product added successfully" });
+    res.status(200).json({ message: "Product added successfully ✅" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -41,6 +46,7 @@ const deleteProductController = async (req, res) => {
 const editProductsController = async (req, res) => {
   try {
     const id = req.params.abc;
+    
     const record = await productCollection.findById(id);
     res.status(200).json({ data: record });
   } catch (error) {
@@ -50,6 +56,7 @@ const editProductsController = async (req, res) => {
 };
 const updateProductController = async (req, res) => {
   try {
+    
     const { Pname, Pprice, Pcat, Pstatus } = req.body;
     const id = req.params.abc;
     await productCollection.findByIdAndUpdate(id, {
@@ -57,6 +64,7 @@ const updateProductController = async (req, res) => {
       ProductPrice: Pprice,
       ProductCat: Pcat,
       ProductStatus: Pstatus,
+      
     });
     res.status(200).json({ message: "Product updated successfully" });
   } catch (error) {
