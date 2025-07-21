@@ -1,9 +1,13 @@
 import React from "react";
-import { useState } from "react";
-import { useEffect } from "react";
+
+import { useState,useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../features/cartSlice/cartSlice";
+import { FaBoltLightning,FaCartPlus  } from "react-icons/fa6";
 
 const Products = () => {
   const [data, setData] = useState([]);
+  const dispatch = useDispatch();
   async function Productsdata() {
     try {
       const response = await fetch("/api/allproducts");
@@ -41,9 +45,24 @@ const Products = () => {
               {item.ProductName}
             </h3>
             <p className="text-teal-400 font-bold">₹{item.ProductPrice}</p>
-            <button className="mt-2 w-full bg-green-500 text-white py-1 rounded hover:bg-green-900">
-              Add To Cart
+            <div className="flex items-center justify-between mt-3">
+              <button
+                className="mt-2 w-full bg-green-500 text-white font-semibold py-1 rounded hover:bg-green-900"
+                onClick={() => {
+                  dispatch(addToCart(item));
+              }}
+              >
+              Add To Cart <FaCartPlus className="text-black inline-block ml-1" />
             </button>
+             <button
+              className="mt-2 ml-1 w-full bg-yellow-500 text-black font-semibold py-1 rounded hover:bg-yellow-700"
+              // onClick={() => {
+              //   dispatch(addToCart(item));
+              // }}
+              >
+              Buy Now <FaBoltLightning className=" inline-block ml-1" />
+            </button>
+                </div>
           </div>
         ))}
       </div>
