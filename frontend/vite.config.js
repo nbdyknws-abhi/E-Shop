@@ -7,13 +7,13 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://choppertown-backend.onrender.com",
+        target: "http://localhost:5000/",
       },
       "/uploads": {
-        target: "https://choppertown-backend.onrender.com",
+        target: "http://localhost:5000/",
        
       }
     },
   },
 });
-//https://http://localhost:5000/
+//http://localhost:5000/
