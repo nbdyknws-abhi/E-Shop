@@ -8,35 +8,16 @@ import { Link } from "react-router-dom";
 const AdminQuery = () => {
   const [queryData, setQueryData] = useState([]);
   async function handleReply() {
-     try {
-      const response=await fetch("/api/query/reply" )
-      const record=  await response.json();
-      if(response.ok){
+    try {
+      const response = await fetch("/api/query/reply");
+      const record = await response.json();
+      if (response.ok) {
         setQueryData(record.data);
       } else {
-        toast.error(record.message)
+        toast.error(record.message);
       }
-     } catch (error) {
-       toast.error(error)
-      
-     }
-  }
-  async function handleDelete(id) {
-    try {
-      const response = await fetch(`/api/deletequery/${id}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      });
-      const result = await response.json();
-      if (response.ok) {
-        setQueryData(queryData.filter((item) => item._id !== id));
-        toast.success(result.message);
-      } else {
-        toast.error(result.message);
-      }
-      console.log(result);
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error);
     }
   }
   async function handleDelete(id) {
@@ -57,9 +38,27 @@ const AdminQuery = () => {
       toast.error(error.message);
     }
   }
-  useEffect(()=>{
+  async function handleDelete(id) {
+    try {
+      const response = await fetch(`/api/deletequery/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+      const result = await response.json();
+      if (response.ok) {
+        setQueryData(queryData.filter((item) => item._id !== id));
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+      console.log(result);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
+  useEffect(() => {
     handleReply();
-  },[]);
+  }, []);
   return (
     <div className="flex mt-16">
       <Slidebar />
@@ -96,35 +95,37 @@ const AdminQuery = () => {
               </tr>
             </thead>
             <tbody>
-              {
-                queryData.map((item, index) => (
-                  <tr key={item._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                    <td className="px-6 py-4">{index + 1}</td>
-                    <td className="px-6 py-4">{item.Name}</td>
-                    <td className="px-6 py-4">{item.Query}</td>
-                    <td className="px-6 py-4">{item.Email}</td>
-                    <td className="px-6 py-4">
-                  <button className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                    {
-                      item.QueryStatus === "Pending" ? "Pending" : "Resolved"
-                    }
-                  </button>
-                </td>
-                <td className="px-6 py-4">
-                  <Link to={`/admin/admin-reply/${item._id}`}>
-                  <button className="text-xs bg-green-600 text-white px-3 py-1 rounded">
-                    Reply
-                  </button>
-                  </Link>
-                </td>
-                <td className="px-6 py-4">
-                  <button onClick={() => handleDelete(item._id)} className="text-xs bg-red-500 text-white px-3 py-1 rounded">
-                    Delete
-                  </button>
-                </td>
-              </tr>))
-              }
-              
+              {queryData.map((item, index) => (
+                <tr
+                  key={item._id}
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"
+                >
+                  <td className="px-6 py-4">{index + 1}</td>
+                  <td className="px-6 py-4">{item.Name}</td>
+                  <td className="px-6 py-4">{item.Query}</td>
+                  <td className="px-6 py-4">{item.Email}</td>
+                  <td className="px-6 py-4">
+                    <button className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                      {item.QueryStatus === "Pending" ? "Pending" : "Resolved"}
+                    </button>
+                  </td>
+                  <td className="px-6 py-4">
+                    <Link to={`/admin/admin-reply/${item._id}`}>
+                      <button className="text-xs bg-green-600 text-white px-3 py-1 rounded">
+                        Reply
+                      </button>
+                    </Link>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      className="text-xs bg-red-500 text-white px-3 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

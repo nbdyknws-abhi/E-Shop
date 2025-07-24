@@ -19,6 +19,7 @@ api.get("/query/reply", AdminController.replyQueryController);
 api.delete("/deletequery/:abc", AdminController.deleteQueryController);
 api.get("/getquery/:abc", AdminController.fetchQueryController);
 api.post("/queryreply/:abc", AdminController.queryReplyController);
-
+api.post("/cart/save", UserController.saveCartController);
+// api.get("/cart/:userId", UserController.fetchCartController);
 
 module.exports=api;

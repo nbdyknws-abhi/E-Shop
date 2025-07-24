@@ -9,7 +9,10 @@ import {
   DecrementQuantity,
   deleteCartItem,
   IncrementQuantity,
+  saveCart,
+  fetchCart
 } from "../features/cartSlice/cartSlice";
+import { useEffect } from "react";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -18,7 +21,21 @@ const Cart = () => {
   const cartAllValue = useSelector((state) => state.Cart);
   const dispatch = useDispatch();
 
-  dispatch(carttotalPrice());
+  useEffect(() => {
+    dispatch(carttotalPrice());
+  }, [cartData, dispatch]);
+  useEffect(()=>{
+    if(cartData.length > 0) {
+     dispatch(
+      saveCart({
+        userId: "686f7d877e03cde8b1a5ce9c",
+        cartItems: cartData,
+        totalPrice: cartAllValue.TotalPrice,
+        totalQuantity: cartAllValue.TotalQuantity,
+      })
+     )
+    }
+  }, [cartData, cartAllValue, dispatch]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50">

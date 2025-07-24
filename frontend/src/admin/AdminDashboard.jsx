@@ -1,22 +1,21 @@
 import React from "react";
 import Slidebar from "./Slidebar";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const AdminDashboard = () => {
   const [products, setProducts] = useState([]);
-  async function getProducts () {
+  async function getProducts() {
     try {
-        const response = await fetch("/api/getproducts" )
-        const result= await response.json();
-        setProducts(result.data);
-        
-      } catch (error) {
-        console.log(error);
-      }
+      const response = await fetch("/api/getproducts");
+      const result = await response.json();
+      setProducts(result.data);
+    } catch (error) {
+      console.log(error);
     }
-    useEffect(() => {
-      getProducts();
-    }, []);
+  }
+  useEffect(() => {
+    getProducts();
+  }, []);
   return (
     <div className="flex mt-16">
       <Slidebar />

@@ -17,14 +17,14 @@ const Contact = () => {
   async function handleForm(e) {
     e.preventDefault();
     try {
-      const response = await fetch("/api/userquery",{
+      const response = await fetch("/api/userquery", {
         method: "POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(query)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(query),
       });
       const result = await response.json();
       if (response.ok) {
-       toast.success(result.message);
+        toast.success(result.message);
         setQuery({
           userName: "",
           userEmail: "",
@@ -36,7 +36,7 @@ const Contact = () => {
     } catch (error) {
       toast.error("Failed to submit query");
     }
-  };
+  }
   return (
     <div className="max-w-3xl mx-auto mt-24 p-6 bg-white rounded-xl shadow-xl">
       <h2 className="text-2xl font-bold text-green-500 mb-4 text-center">

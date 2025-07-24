@@ -21,7 +21,7 @@ const Login = () => {
 
       const result = await response.json();
 
-     if (response.ok) {
+      if (response.ok) {
         if (result.data && result.data.userEmail === "admin@gmail.com") {
           navigate("/admin/");
           toast.success("Hello Admin 👤");
@@ -36,12 +36,11 @@ const Login = () => {
       console.log(error);
       toast.error("An error occurred while logging in.");
     }
-  };
+  }
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   return (
-    
     <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50">
       <div className="bg-white w-full max-w-md p-6 rounded-xl shadow-lg relative mx-4">
         <button

@@ -71,10 +71,11 @@ const AdminProducts = () => {
                 ₹{items.ProductPrice}
               </p>
               <p
-                className={`font-semibold mt-1 ${items.ProductStatus === "In-Stock"
+                className={`font-semibold mt-1 ${
+                  items.ProductStatus === "In-Stock"
                     ? "text-teal-300"
                     : "text-red-600"
-                  }`}
+                }`}
               >
                 {items.ProductStatus}
               </p>

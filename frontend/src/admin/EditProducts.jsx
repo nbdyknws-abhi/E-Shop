@@ -1,7 +1,7 @@
 import React from "react";
 import Slidebar from "./Slidebar";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const EditProducts = () => {
@@ -9,49 +9,46 @@ const EditProducts = () => {
   const [edit, setEdit] = useState({});
   const [selectedFile, setSelectedFile] = useState(null);
 
-
   const { id } = useParams();
   async function handleForm(e) {
     try {
       e.preventDefault();
-      
+
       const formData = new FormData();
-  formData.append("Pname", edit.ProductName);
-  formData.append("Pprice", edit.ProductPrice);
-  formData.append("Pcat", edit.ProductCat);
-  formData.append("Pstatus", edit.ProductStatus);
+      formData.append("Pname", edit.ProductName);
+      formData.append("Pprice", edit.ProductPrice);
+      formData.append("Pcat", edit.ProductCat);
+      formData.append("Pstatus", edit.ProductStatus);
 
-  // ✅ Only append a new image if user selected it
-  if (selectedFile) {
-    formData.append("Pimage", selectedFile);
-  }
+      // ✅ Only append a new image if user selected it
+      if (selectedFile) {
+        formData.append("Pimage", selectedFile);
+      }
 
-  const response = await fetch(`/api/productupdate/${id}`, {
-    method: "PUT",
-    body: formData, // ✅ no JSON headers here
-  });
+      const response = await fetch(`/api/productupdate/${id}`, {
+        method: "PUT",
+        body: formData, // ✅ no JSON headers here
+      });
 
       const result = await response.json();
-      if(response.ok){
+      if (response.ok) {
         toast.success(result.message);
         navigate("/admin/products");
-      }else{
+      } else {
         toast.error(result.message);
       }
     } catch (error) {
       console.log(error);
-      
     }
   }
   async function handleEdit() {
     try {
       const response = await fetch(`/api/fetchdata/${id}`);
       const result = await response.json();
-      
+
       setEdit(result.data);
     } catch (error) {
       console.log(error);
-      
     }
   }
   useEffect(() => {
@@ -59,7 +56,6 @@ const EditProducts = () => {
   }, []);
   function handleChange(e) {
     setEdit({ ...edit, [e.target.name]: e.target.value });
-    
   }
   return (
     <div className="flex mt-16">
@@ -76,7 +72,8 @@ const EditProducts = () => {
         >
           Back
         </button>
-        <form onSubmit={handleForm}
+        <form
+          onSubmit={handleForm}
           action=""
           className="backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-2xl p-8 max-w-3xl mx-auto space-y-6"
         >
@@ -85,10 +82,10 @@ const EditProducts = () => {
           </label>
           <input
             type="text"
-             onChange={handleChange}            
+            onChange={handleChange}
             name="ProductName"
             id=""
-            value={edit.ProductName }
+            value={edit.ProductName}
             placeholder="e.g Fresh Fruits"
             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
@@ -97,10 +94,10 @@ const EditProducts = () => {
           </label>
           <input
             type="number"
-             onChange={handleChange}            
+            onChange={handleChange}
             name="ProductPrice"
             id=""
-            value={edit.ProductPrice }
+            value={edit.ProductPrice}
             placeholder="e.g 999"
             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
@@ -109,10 +106,10 @@ const EditProducts = () => {
             Categorys
           </label>
           <select
-             onChange={handleChange}          
+            onChange={handleChange}
             name="ProductCat"
             id=""
-            value={edit.ProductCat }
+            value={edit.ProductCat}
             className="w-full px-4 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             <option value="">---Select---</option>
@@ -130,10 +127,10 @@ const EditProducts = () => {
           </label>
 
           <select
-             onChange={handleChange}          
+            onChange={handleChange}
             name="ProductStatus"
             id=""
-            value={edit.ProductStatus }
+            value={edit.ProductStatus}
             className="w-full px-4 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             <option value="">---Select---</option>
@@ -148,7 +145,7 @@ const EditProducts = () => {
             type="file"
             name=""
             id=""
-             onChange={(e) => setSelectedFile(e.target.files[0])}  // ✅ capture file
+            onChange={(e) => setSelectedFile(e.target.files[0])} // ✅ capture file
             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none "
           />
           <div className="text-right">

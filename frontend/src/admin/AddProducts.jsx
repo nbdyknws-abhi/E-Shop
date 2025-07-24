@@ -6,28 +6,28 @@ import toast from "react-hot-toast";
 
 const AddProducts = () => {
   const navigate = useNavigate();
-  const [product, setProduct] = useState({Pname:"",Price:"",Cat:""});
+  const [product, setProduct] = useState({ Pname: "", Price: "", Cat: "" });
   const [pimage, setPimage] = useState("");
-  
+
   async function handleForm(e) {
     e.preventDefault();
-  const formdata= new FormData();
-  formdata.append("Pname", product.Pname);
-  formdata.append("Price", product.Price);
-  formdata.append("Cat", product.Cat);
-  formdata.append("pimage", pimage);
+    const formdata = new FormData();
+    formdata.append("Pname", product.Pname);
+    formdata.append("Price", product.Price);
+    formdata.append("Cat", product.Cat);
+    formdata.append("pimage", pimage);
 
     try {
       const response = await fetch("/api/add-product", {
         method: "POST",
         body: formdata,
-      })
-      const  result =await response.json();
+      });
+      const result = await response.json();
       console.log(result);
-      if(response.ok){
+      if (response.ok) {
         toast.success(result.message);
         navigate("/admin/products");
-      }else{
+      } else {
         toast.error(result.message);
       }
     } catch (error) {
@@ -53,7 +53,9 @@ const AddProducts = () => {
         >
           Back
         </button>
-        <form onSubmit={handleForm} encType="multipart/form-data"
+        <form
+          onSubmit={handleForm}
+          encType="multipart/form-data"
           action=""
           className="bg-white shadow-md rounded-xl p-6 max-w-3xl mx-auto space-y-6"
         >
@@ -113,8 +115,10 @@ const AddProducts = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none "
           />
           <div className="text-right">
-            <button type="submit"
-             className="bg-purple-500 text-white px-6 py-2 rounded hover:bg-purple-700 transition">
+            <button
+              type="submit"
+              className="bg-purple-500 text-white px-6 py-2 rounded hover:bg-purple-700 transition"
+            >
               Add Product
             </button>
           </div>
