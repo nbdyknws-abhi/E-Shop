@@ -3,7 +3,7 @@ const productCollection = require("../model/product");
 const queryCollection = require("../model/query");
 const cartCollection = require("../model/cart");
 const bcrypt = require("bcrypt");
-
+const jwt=require("jsonwebtoken")
 const regDataController = async (req, res) => {
   try {
     const { fname, email, pass } = req.body;
@@ -50,10 +50,16 @@ const loginDataController = async (req, res) => {
     if (!matchPass) {
       return res.status(400).json({ message: "Invalid Credentials😓" });
     }
+    const token = jwt.sign(
+      { id: userCheck._id, email: userCheck.userEmail },
+      process.env.JWT_SECRET,
+      { expiresIn: "2d" }
+    );
 
     res.status(200).json({
       message: " Login Successfully😍",
       data: userCheck,
+      token: token,
     });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error😓" });

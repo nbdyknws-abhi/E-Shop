@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "ecommerce server",
   "license": "ISC",
-  "author": "Abhishek",
+  "author": "Abhishek Verma",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
