@@ -81,6 +81,10 @@ export const cartSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchCart.fulfilled, (state, action) => {
       console.log("fetch success", action.payload);
+      state.cartItems = action.payload.cartItems || [];
+      state.TotalPrice = action.payload.totalPrice || 0;
+      state.TotalQuantity = action.payload.totalQuantity || 0;
+
     });
     builder.addCase(saveCart.fulfilled, (state, action) => {
       console.log("save success", action.payload);

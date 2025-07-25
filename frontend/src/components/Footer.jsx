@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "../assets/Quickzy.png";
+import Logo from "../assets/Logo.png";
 import { Link } from "react-router-dom";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 
@@ -16,7 +16,7 @@ const Footer = () => {
     <footer className="bg-gradient-to-r from-green-100 via-white to-white  border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 sm:gap-16 md:gap-32 text-gray-700">
         <div>
-          <img src={Logo} alt="" className="h-24 mb-3" />
+          <img src={Logo} alt="" className="h-16 mb-3" />
           <p>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam,
             voluptas!
@@ -61,7 +61,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="text-center text-sm text-gray-500 py-4 border-t border-gray-300">
-        © {new Date().getFullYear()} Copyright By Abhishek Verma🫠
+        © {new Date().getFullYear()} Copyright By Chopper Town | Made by Abhishek Verma
       </div>
     </footer>
   );

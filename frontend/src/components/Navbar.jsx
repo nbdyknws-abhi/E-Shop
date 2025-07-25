@@ -1,4 +1,5 @@
 import Logo from "../assets/Logo.png";
+import logo from "../assets/logonew.png";
 import { Link } from "react-router-dom";
 import {
   FaShoppingCart,
@@ -10,12 +11,14 @@ import {
 } from "react-icons/fa";
 import { MdContactSupport } from "react-icons/md";
 import { useState } from "react";
+import SearchData from "./SearchData";
 
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
-
+  const [showSearch, setShowSearch] = useState(false);
+console.log(showSearch);
 
   const ScrollToTop = () => {
   window.scrollTo({
@@ -32,22 +35,25 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link  onClick={ScrollToTop}>
-            
-              <img src={Logo} alt="Logo" className="h-20 w-auto" />
+              <img src={logo} alt="Logo" className="h-20 w-auto mb-0 mt-2" />
             </Link>
           </div>
 
           {/* Search */}
 
-          <div className="flex-1 mx-4">
-            <div className="relative">
+          <div className="flex flex-1 justify-center">
+            <div className="relative w-full max-w-3xl">
+              
               <input
                 type="search"
                 name=""
                 id=""
-                className="w-full bg-gray-200 rounded-full ps-4 pe-10 py-2 shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="Search for Products, Brands and More"
+                readOnly
+                onFocus={() => setShowSearch(true)}
+                className="w-full bg-gray-200 rounded-full ps-4 pe-10 py-3 shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               />
-              <FaSearch className="absolute right-3 top-3 text-sm text-gray-500 " />
+              <FaSearch className="absolute right-3 top-3 text-xl text-gray-500 " />
             </div>
           </div>
 
@@ -103,6 +109,8 @@ export default function Navbar() {
           </Link>
         </div>
       )}
+      {/* Search Data Component */}
+      {showSearch && <SearchData onClose={setShowSearch} />}
     </nav>
   );
 }

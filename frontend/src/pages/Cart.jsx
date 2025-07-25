@@ -24,6 +24,7 @@ const Cart = () => {
   useEffect(() => {
     dispatch(carttotalPrice());
   }, [cartData, dispatch]);
+
   useEffect(()=>{
     if(cartData.length > 0) {
      dispatch(
@@ -36,6 +37,13 @@ const Cart = () => {
      )
     }
   }, [cartData, cartAllValue, dispatch]);
+
+  useEffect(()=>{
+    dispatch(
+      fetchCart("686f7d877e03cde8b1a5ce9c",)
+    )
+  },[dispatch]);
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50">

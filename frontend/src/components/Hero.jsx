@@ -8,6 +8,7 @@ import { BsArrowRightSquareFill, BsArrowLeftSquareFill } from "react-icons/bs";
 import { useSwipeable } from "react-swipeable";
 import { motion, AnimatePresence } from "framer-motion";
 
+
 const slides = [
   {
     title: "Fast Delivery 🚀",
@@ -36,7 +37,8 @@ const slides = [
   },
 ];
 
-const Hero = () => {
+
+const Hero = ({ scrollToProducts }) => {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
@@ -54,7 +56,7 @@ const Hero = () => {
 
   return (
     <section
-      className="relative bg-black text-white px-6 py-12 mx-auto max-w-7xl rounded-xl mt-10 overflow-hidden"
+      className="relative bg-black text-white px-6 py-12 mx-auto max-w-7xl rounded-xl mt-28 overflow-hidden"
       {...swipeHandlers}
     >
       {/* Blurred Background */}
@@ -79,7 +81,7 @@ const Hero = () => {
               {slides[current].title}
             </h1>
             <p>{slides[current].description}</p>
-            <button className="mt-4 bg-green-500 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg">
+            <button onClick={scrollToProducts} className="mt-4 bg-green-500 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg" >
               Shop Now
             </button>
           </div>
@@ -97,7 +99,7 @@ const Hero = () => {
       {/* Controls */}
       <button
         onClick={() => setCurrent((current - 1 + slides.length) % slides.length)}
-        className="absolute top-1/2 left-4  text-4xl font-bold text-white hover:text-green-400 z-20"
+        className="absolute top-1/2 left-4  text-4xl font-bold  hover:text-green-400 z-20"
       >
         <BsArrowLeftSquareFill />
       </button>

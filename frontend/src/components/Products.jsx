@@ -1,16 +1,19 @@
 import React from "react";
-
+import Category from "./Category";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../features/cartSlice/cartSlice";
 import { FaBoltLightning, FaCartPlus } from "react-icons/fa6";
+import { BsQrCodeScan } from "react-icons/bs";
 
 const Products = () => {
   const [data, setData] = useState([]);
+  const [category, setCategory] = useState("All");
+
   const dispatch = useDispatch();
-  async function Productsdata() {
+  async function Productsdata(SelectCategory="All") {
     try {
-      const response = await fetch("/api/allproducts");
+      const response = await fetch(`/api/allproducts?category=${SelectCategory}`, );
       const result = await response.json();
       if (response.ok) {
         setData(result.data);
@@ -23,13 +26,14 @@ const Products = () => {
     }
   }
   useEffect(() => {
-    Productsdata();
-  }, []);
+    Productsdata(category);
+  }, [category]);
 
   return (
     <section className="py-10 px-6 max-w-7xl mx-auto ">
+      <Category onSelectCategory={setCategory} />
       <h2 className="text-2xl font-semibold text-gray-600 mb-6">
-        Trending Products 🔥
+        {category} Products 
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-7">
         {data.map((item) => (

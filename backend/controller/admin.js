@@ -7,7 +7,7 @@ const Pimage = req.file.filename
   
     const { Pname, Price, Cat } = req.body;
     if (!Pname || !Price || !Cat) {
-      return res.status(400).json({ message: "All fields are required 😓" });
+      return res.status(400).json({ message: "All fields are required " });
     }
     
     const record = new productCollection({
