@@ -56,7 +56,7 @@ const Hero = ({ scrollToProducts }) => {
 
   return (
     <section
-      className="relative bg-black text-white px-6 py-12 mx-auto max-w-7xl rounded-xl mt-28 overflow-hidden"
+      className="relative bg-black text-white px-6 py-12 mx-auto max-w-7xl rounded-xl mt-32 overflow-hidden"
       {...swipeHandlers}
     >
       {/* Blurred Background */}

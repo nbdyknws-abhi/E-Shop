@@ -2,6 +2,7 @@ const api=require("express").Router();
 const UserController=require("../controller/user.js");
 const AdminController=require("../controller/admin.js")
 const uploads = require("../middleware/multer.js");
+const auth = require("../middleware/auth.js");
 api.get("/",(req,res)=>{
     res.send("Welcome to the E-commerce API");
 })
@@ -19,8 +20,8 @@ api.get("/query/reply", AdminController.replyQueryController);
 api.delete("/deletequery/:abc", AdminController.deleteQueryController);
 api.get("/getquery/:abc", AdminController.fetchQueryController);
 api.post("/queryreply/:abc", AdminController.queryReplyController);
-api.post("/cart/save", UserController.saveCartController);
-api.get("/cart/:userId", UserController.fetchCartController);
-api.get("/search", UserController.searchController);
+api.post("/cart/save",auth, UserController.saveCartController);
+api.get("/cart/:userId",auth, UserController.fetchCartController);
+api.get("/search",auth, UserController.searchController);
 
 module.exports = api;

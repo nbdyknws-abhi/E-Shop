@@ -10,13 +10,14 @@ import {
   deleteCartItem,
   IncrementQuantity,
   saveCart,
-  fetchCart
+  fetchCart,
 } from "../features/cartSlice/cartSlice";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 const Cart = () => {
   const navigate = useNavigate();
-
+  const [checkAuth, setCheckAuth] = useState(false);
   const cartData = useSelector((state) => state.Cart.cartItems);
   const cartAllValue = useSelector((state) => state.Cart);
   const dispatch = useDispatch();
@@ -25,29 +26,49 @@ const Cart = () => {
     dispatch(carttotalPrice());
   }, [cartData, dispatch]);
 
-  useEffect(()=>{
-    if(cartData.length > 0) {
-     dispatch(
-      saveCart({
-        userId: "686f7d877e03cde8b1a5ce9c",
-        cartItems: cartData,
-        totalPrice: cartAllValue.TotalPrice,
-        totalQuantity: cartAllValue.TotalQuantity,
-      })
-     )
+  useEffect(() => {
+    let userId = localStorage.getItem("user");
+    let token = localStorage.getItem("token");
+    if (token && userId && cartData.length > 0) {
+      dispatch(
+        saveCart({
+          userId: userId,
+          cartItems: cartData,
+          totalPrice: cartAllValue.TotalPrice,
+          totalQuantity: cartAllValue.TotalQuantity,
+        })
+      );
     }
   }, [cartData, cartAllValue, dispatch]);
 
-  useEffect(()=>{
-    dispatch(
-      fetchCart("686f7d877e03cde8b1a5ce9c",)
-    )
-  },[dispatch]);
+  useEffect(() => {
+    let userId = localStorage.getItem("user");
+    let token = localStorage.getItem("token");
+    if (!token || !userId) {
+      toast.error("Please login to view your cart.");
+      navigate("/login");
+      return;
+    }
+    if (userId) {
+      dispatch(fetchCart(userId));
+      setCheckAuth(true);
+    } else {
+      setCheckAuth(false);
+    }
+  }, [dispatch, navigate]);
 
-
+  if (!checkAuth) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg relative mx-4">
+          Loading Cart...
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50">
-      <div className="bg-white w-full max-w-xl p-6 rounded-xl shadow-lg relative overflow-y-auto max-h-[90vh] mx-4">
+    <div className="fixed inset-0 bg-black z-50 bg-opacity-90 backdrop-blur-sm flex justify-center items-center ">
+      <div className="bg-slate-200 w-full max-w-2xl p-6 rounded-xl shadow-lg relative overflow-y-auto max-h-[90vh] mx-4">
         <button
           onClick={() => {
             navigate("/");
@@ -84,9 +105,13 @@ const Cart = () => {
                   >
                     <FaMinus />
                   </button>
-                  <span className="px-2">{value.quantity}
-                    {value.quantity === 0 ? dispatch(deleteCartItem(value)) : ""}</span>
-              
+                  <span className="px-2">
+                    {value.quantity}
+                    {value.quantity === 0
+                      ? dispatch(deleteCartItem(value))
+                      : ""}
+                  </span>
+
                   <button
                     className="px-2 py-1 bg-green-200 rounded hover:bg-green-400"
                     onClick={() => {

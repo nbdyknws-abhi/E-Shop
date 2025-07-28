@@ -9,23 +9,34 @@ import {
   FaHome,
   FaSearch,
 } from "react-icons/fa";
+import { FiLogOut } from "react-icons/fi";
 import { MdContactSupport } from "react-icons/md";
 import { useState } from "react";
 import SearchData from "./SearchData";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
   const [showSearch, setShowSearch] = useState(false);
-console.log(showSearch);
+  const navigate = useNavigate();
 
+console.log(showSearch);
+  let token = localStorage.getItem("token");
   const ScrollToTop = () => {
   window.scrollTo({
     top: 0,
     behavior: 'smooth', // for smooth animation
   });
 };
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    toast.success("Logged out successfully!");
+    navigate("/");
+  };
 
   // Scroll to top when the component mounts
   return (
@@ -72,12 +83,17 @@ console.log(showSearch);
             >
               <MdContactSupport className="text-3xl" />
             </Link>
-            <Link
+            {
+              !token?(<Link
               to={"/login"}
               className="flex items-center gap-1 text-gray-700 hover:text-green-600"
             >
               <FaRegUserCircle className="text-3xl" />
-            </Link>
+            </Link>):(
+              <FiLogOut onClick={handleLogout}
+                className="text-3xl text-red-500 hover:text-red-800 cursor-pointer"
+              />
+            )}
           </div>
 
           {/* Mobile Hamburger */}
@@ -92,21 +108,33 @@ console.log(showSearch);
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden bg-white px-4 pt-2 pb-4 space-y-2 shadow-md">
-          <Link to={"/"} className="block text-gray-700 hover:text-green-600">
+          <Link to={"/"} className="block text-gray-700 hover:text-green-600 cursor-pointer">
             Home
           </Link>
           <Link
             to={"/cart"}
-            className="block text-gray-700 hover:text-green-600"
+            className="block text-gray-700 hover:text-green-600 cursor-pointer"
           >
             Cart
           </Link>
-          <Link
-            to={"/login"}
-            className="block text-gray-700 hover:text-green-600"
-          >
-            User
-          </Link>
+          {
+            !token ? (
+              <Link
+                to={"/login"}
+                className="block text-gray-700 hover:text-green-600 cursor-pointer"
+              >
+                Login
+              </Link>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="block text-red-500 hover:text-red-800 cursor-pointer"
+              >
+                Logout
+              </button>
+            )}
+          
+        
         </div>
       )}
       {/* Search Data Component */}
