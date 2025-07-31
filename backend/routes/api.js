@@ -23,5 +23,7 @@ api.post("/queryreply/:abc", AdminController.queryReplyController);
 api.post("/cart/save",auth, UserController.saveCartController);
 api.get("/cart/:userId",auth, UserController.fetchCartController);
 api.get("/search",auth, UserController.searchController);
+api.post("/create-order", UserController.OrderController);
+api.post("/verify", auth, UserController.VerifyController);
 
 module.exports = api;

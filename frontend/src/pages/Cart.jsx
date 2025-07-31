@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { FaMinus, FaPlus } from "react-icons/fa";
@@ -12,12 +12,11 @@ import {
   saveCart,
   fetchCart,
 } from "../features/cartSlice/cartSlice";
-import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 const Cart = () => {
   const navigate = useNavigate();
-  const [checkAuth, setCheckAuth] = useState(false);
+  const [checkAuth, setCheckAuth] = useState(true);
   const cartData = useSelector((state) => state.Cart.cartItems);
   const cartAllValue = useSelector((state) => state.Cart);
   const dispatch = useDispatch();
@@ -56,6 +55,78 @@ const Cart = () => {
       setCheckAuth(false);
     }
   }, [dispatch, navigate]);
+
+  function handlePayment() {
+    const amount = cartAllValue.TotalPrice;
+    const currency = "INR";
+    const receipt = "receipet#1";
+
+    fetch("/api/create-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: amount,
+        currency: currency,
+        receipt: receipt,
+      }),
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((order) => {
+        const options = {
+          key: "rzp_test_7uPWLRLgc2mdg9", // Replace with your RazorPay Key ID
+          amount: order.amount,
+          currency: order.currency,
+          name: "Chopper Town",
+          description: "Test Mode",
+          order_id: order.id,
+          handler: function (response) {
+            let token = localStorage.getItem("token");
+            let userID = localStorage.getItem("user");
+            fetch("/api/verify", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                amount,
+                userID,
+              }),
+            })
+              .then((res) => {
+                return res.json();
+              })
+              .then((result) => {
+                if (result.success) {
+                  toast.success("Payment Successfully ");
+                } else {
+                  toast.error("Payment Failed ");
+                }
+              });
+          },
+
+          prefill: {
+            name: "Abhishek Verma",
+            email: "abhishek.verma@example.com",
+            contact: "9433137660",
+          },
+          theme: {
+            color: "#3399cc",
+          },
+          method: {
+            upi: true,
+          },
+        };
+
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+      });
+  }
 
   if (!checkAuth) {
     return (
@@ -141,7 +212,10 @@ const Cart = () => {
             Total:-{" "}
             <span className="text-green-500">₹{cartAllValue.TotalPrice}</span>
           </p>
-          <button className="mt-4 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-700 transition">
+          <button
+            onClick={handlePayment}
+            className="mt-4 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-700 transition"
+          >
             Checkout
           </button>
         </div>
