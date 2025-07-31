@@ -54,6 +54,7 @@ const VerifyController = async (req, res) => {
     await record.save();
 
     res.json({ success: true, message: "Payment Verify Successfully" });
+    
   } else {
     res.json({ success: false, message: "Payment Verify Failed" });
   }

@@ -4,17 +4,22 @@ export const saveCart = createAsyncThunk("cart/saveCart", async (cartData) => {
   let token = localStorage.getItem("token");
   const response = await fetch("/api/cart/save", {
     method: "POST",
-    headers: { "Content-Type": "application/json",
-      "Authorization":`Bearer ${token}` },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(cartData),
   });
   return await response.json();
 });
 export const fetchCart = createAsyncThunk("cart/fetch", async (userId) => {
   let token = localStorage.getItem("token");
-  const response = await fetch(`/api/cart/${userId}`,{
+  const response = await fetch(`/api/cart/${userId}`, {
     method: "GET",
-    headers: { "Content-Type": "application/json","Authorization":`Bearer ${token}` },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
   });
   return await response.json();
 });
@@ -28,6 +33,11 @@ export const cartSlice = createSlice({
   name: "Cart",
   initialState,
   reducers: {
+    clearCart: (state) => {
+      state.cartItems = [];
+      state.TotalItems = 0;
+      state.TotalPrice = 0;
+    },
     addToCart: (state, actions) => {
       const find = state.cartItems.findIndex((value) => {
         return value._id === actions.payload._id;
@@ -90,7 +100,6 @@ export const cartSlice = createSlice({
       state.cartItems = action.payload.cartItems || [];
       state.TotalPrice = action.payload.totalPrice || 0;
       state.TotalQuantity = action.payload.totalQuantity || 0;
-
     });
     builder.addCase(saveCart.fulfilled, (state, action) => {
       console.log("save success", action.payload);
@@ -104,5 +113,6 @@ export const {
   carttotalPrice,
   IncrementQuantity,
   DecrementQuantity,
+  clearCart,
 } = cartSlice.actions;
 export default cartSlice.reducer;

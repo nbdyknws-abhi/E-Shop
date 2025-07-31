@@ -11,6 +11,7 @@ import {
   IncrementQuantity,
   saveCart,
   fetchCart,
+  clearCart
 } from "../features/cartSlice/cartSlice";
 import toast from "react-hot-toast";
 
@@ -104,6 +105,8 @@ const Cart = () => {
               .then((result) => {
                 if (result.success) {
                   toast.success("Payment Successfully ");
+                  dispatch(clearCart());
+                  navigate("/");
                 } else {
                   toast.error("Payment Failed ");
                 }
@@ -123,8 +126,8 @@ const Cart = () => {
           },
         };
 
-        const razorpay = new window.Razorpay(options);
-        razorpay.open();
+        const rzp = new window.Razorpay(options);
+        rzp.open();
       });
   }
 
