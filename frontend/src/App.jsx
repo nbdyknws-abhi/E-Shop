@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect,useState} from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import Navbar from "./components/Navbar";
@@ -13,11 +13,23 @@ import EditProducts from "./admin/EditProducts";
 import Contact from "./pages/Contact";
 import AdminQuery from "./admin/AdminQuery";
 import AdminReply from "./admin/AdminReply";
+import AnimatedLoadingBar from "./components/AnimatedLoadingBar";
+import RouteLoader from "./components/RouteLoader";
 
 const App = () => {
+   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 1900);
+    return () => clearTimeout(t);
+  }, []);
+  if (loading) {
+    return <AnimatedLoadingBar />;
+  }
   return (
     <div>
       <BrowserRouter>
+        <RouteLoader />
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
