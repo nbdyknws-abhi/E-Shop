@@ -16,10 +16,14 @@ const AddProducts = () => {
     formdata.append("Price", product.Price);
     formdata.append("Cat", product.Cat);
     formdata.append("pimage", pimage);
-
+    
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch("/api/add-product", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formdata,
       });
       const result = await response.json();
@@ -39,7 +43,7 @@ const AddProducts = () => {
     setProduct({ ...product, [e.target.name]: e.target.value });
   }
   return (
-    <div className="flex mt-16">
+    <div className="flex ">
       <Slidebar />
       <div className="flex-1 p-10 bg-gray-50 min-h-screen">
         <h1 className="text-3xl font-bold mb-6 text-gray-800">

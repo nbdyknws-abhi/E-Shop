@@ -3,20 +3,20 @@ const productCollection = require("../model/product");
 const nodemailer = require("nodemailer");
 const addProductController = async (req, res) => {
   try {
-const Pimage = req.file.filename
-  
+    const Pimage = req.file.filename;
+
     const { Pname, Price, Cat } = req.body;
     if (!Pname || !Price || !Cat) {
       return res.status(400).json({ message: "All fields are required " });
     }
-    
+
     const record = new productCollection({
       ProductName: Pname,
       ProductPrice: Price,
       ProductCat: Cat,
-      ProductImage: Pimage
+      ProductImage: Pimage,
     });
-    
+
     await record.save();
     res.status(200).json({ message: "Product added successfully ✅" });
   } catch (error) {
@@ -46,7 +46,7 @@ const deleteProductController = async (req, res) => {
 const editProductsController = async (req, res) => {
   try {
     const id = req.params.abc;
-    
+
     const record = await productCollection.findById(id);
     res.status(200).json({ data: record });
   } catch (error) {
@@ -56,7 +56,6 @@ const editProductsController = async (req, res) => {
 };
 const updateProductController = async (req, res) => {
   try {
-    
     const { Pname, Pprice, Pcat, Pstatus } = req.body;
     const id = req.params.abc;
     const updateData = {
@@ -121,37 +120,59 @@ const queryReplyController = async (req, res) => {
     const { to, sub, body } = req.body;
     const id = req.params.abc;
     const transporter = nodemailer.createTransport({
+      service: "gmail",
       host: "smtp.gmail.com",
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: "av022002@gmail.com",
-        pass: "",
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
-   await transporter.sendMail({
-      from: '"ChopperTown" <av022002@gmail.com>',
+    // Verify transporter configuration
+    await transporter.verify();
+
+    const mailOptions = {
+      from: `"${process.env.EMAIL_FROM_NAME || "ChopperTown Support"}" <${
+        process.env.EMAIL_USER
+      }>`,
       to: to,
       subject: sub,
       text: body,
-      html: `<b>${body}</b>`,
-    });
-  
-      const info = transporter.sendMail({
-        from: '"ChopperTown" <dkexpress06@gmail.com>',
-        to: to,
-        subject: sub,
-        text: body,
-        html: `<b>${body}</b>`,
-      });
-    await queryCollection.findByIdAndUpdate(id, {
-      QueryStatus: "replied",
-    })
+      html: `<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2 style="color: #333;">Reply from ChopperTown Support</h2>
+        <p>${body.replace(/\n/g, "<br>")}</p>
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+        <p style="color: #666; font-size: 12px;">
+          This is an automated response from ChopperTown customer support.
+          <br>If you have any further questions, please don't hesitate to contact us.
+        </p>
+      </div>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    // Update query status to "Resolved"
+    await queryCollection.findByIdAndUpdate(id, { QueryStatus: "Resolved" });
+
     res.status(200).json({ message: "Reply sent successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to send reply" });
     console.error("Error sending email:", error);
+
+    if (error.code === "EAUTH") {
+      res.status(500).json({
+        message: "Email authentication failed. Please check email credentials.",
+      });
+    } else if (error.code === "ECONNECTION") {
+      res.status(500).json({
+        message: "Failed to connect to email server. Please try again later.",
+      });
+    } else {
+      res.status(500).json({
+        message: "Failed to send reply. Please try again later.",
+      });
+    }
   }
 };
 module.exports = {

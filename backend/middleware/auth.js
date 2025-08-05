@@ -8,11 +8,11 @@ const auth = (req, res, next) => {
   }
 
   const token = bearerHeader.split(" ")[1];
-  
-if (!token) {
-  console.log("Token missing after split:", bearerHeader);
-  return res.status(401).json({ message: "Token not found" });
-}
+
+  if (!token) {
+    console.log("Token missing after split:", bearerHeader);
+    return res.status(401).json({ message: "Token not found" });
+  }
   try {
     const VerifyUser = jwt.verify(token, process.env.JWT_SECRET);
 

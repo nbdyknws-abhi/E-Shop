@@ -4,16 +4,22 @@ import skull from "../assets/Logo.png"; // replace with your image path
 
 const LoadingScreen = () => {
   return (
-     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-800">
-      <div className="relative w-[300px] h-[40px] bg-transparent border-2 border-yellow-500 rounded overflow-hidden">
-        
-        <div className="absolute h-full bg-green-500 animate-fill-bar"></div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
+      <div className="text-center space-y-4">
+        {/* Logo with subtle bounce */}
+        <div className="flex justify-center mb-6">
+          <img src={skull} alt="Logo" className="w-16 h-16 animate-bounce" />
+        </div>
 
-        <img
-          src={skull}
-          alt="skull"
-          className="absolute w-10 h-10 top-1/2 -translate-y-1/2 animate-move-image"
-        />
+        {/* Progress bar container */}
+        <div className="relative w-[280px] h-[6px] bg-slate-700 rounded-full overflow-hidden shadow-lg">
+          <div className="absolute h-full bg-gradient-to-r from-green-400 to-green-500 animate-fill-bar rounded-full shadow-md"></div>
+        </div>
+
+        {/* Loading text */}
+        <p className="text-white text-sm font-medium animate-pulse">
+          Loading amazing products...
+        </p>
       </div>
     </div>
   );

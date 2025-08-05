@@ -8,7 +8,6 @@ import { BsArrowRightSquareFill, BsArrowLeftSquareFill } from "react-icons/bs";
 import { useSwipeable } from "react-swipeable";
 import { motion, AnimatePresence } from "framer-motion";
 
-
 const slides = [
   {
     title: "Fast Delivery 🚀",
@@ -37,7 +36,6 @@ const slides = [
   },
 ];
 
-
 const Hero = ({ scrollToProducts }) => {
   const [current, setCurrent] = useState(0);
 
@@ -50,7 +48,8 @@ const Hero = ({ scrollToProducts }) => {
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => setCurrent((prev) => (prev + 1) % slides.length),
-    onSwipedRight: () => setCurrent((prev) => (prev - 1 + slides.length) % slides.length),
+    onSwipedRight: () =>
+      setCurrent((prev) => (prev - 1 + slides.length) % slides.length),
     trackMouse: true,
   });
 
@@ -64,41 +63,45 @@ const Hero = ({ scrollToProducts }) => {
         className="absolute inset-0 bg-cover bg-center blur-xl opacity-30"
         style={{ backgroundImage: `url(${slides[current].image})` }}
       ></div>
-        <div className="min-h-[100px] relative">
-
-      <AnimatePresence mode="wait">
-        <motion.div
-        layout
-        key={current}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="relative z-10 md:flex items-center justify-between  "
-        >
-          <div className="md:w-1/2 space-y-4  sm:ml-40  md:ml-40 ">
-            <h1 className="text-4xl md:text-5xl font-bold">
-              {slides[current].title}
-            </h1>
-            <p>{slides[current].description}</p>
-            <button onClick={scrollToProducts} className="mt-4 bg-green-500 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg" >
-              Shop Now
-            </button>
-          </div>
-          <div className="md:w-1/2 mt-8 md:mt-0 sm:mr-20 md:mr-20 flex justify-center items-center">
-            <img
-              src={slides[current].image}
-              alt="Hero Slide"
-              className="w-full max-w-md object-contain h-[300px] rounded shadow-lg"
-            />
-          </div>
-        </motion.div>
-      </AnimatePresence>
-              </div>
+      <div className="min-h-[100px] relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            layout
+            key={current}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="relative z-10 md:flex items-center justify-between  "
+          >
+            <div className="md:w-1/2 space-y-4 sm:ml-8 md:ml-12 lg:ml-16">
+              <h1 className="text-4xl md:text-5xl font-bold">
+                {slides[current].title}
+              </h1>
+              <p>{slides[current].description}</p>
+              <button
+                onClick={scrollToProducts}
+                className="mt-4 bg-green-500 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg"
+              >
+                Shop Now
+              </button>
+            </div>
+            <div className="md:w-1/2 mt-8 md:mt-0 sm:mr-8 md:mr-12 lg:mr-16 flex justify-center items-center">
+              <img
+                src={slides[current].image}
+                alt="Hero Slide"
+                className="w-full max-w-md object-contain h-[300px] rounded shadow-lg"
+              />
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       {/* Controls */}
       <button
-        onClick={() => setCurrent((current - 1 + slides.length) % slides.length)}
+        onClick={() =>
+          setCurrent((current - 1 + slides.length) % slides.length)
+        }
         className="absolute top-1/2 left-4  text-4xl font-bold  hover:text-green-400 z-20"
       >
         <BsArrowLeftSquareFill />

@@ -7,12 +7,39 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
 dist
 dist-ssr
 *.local
-backend/.env
 
+# Environment variables
+backend/.env
+frontend/.env
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Uploads directory (keep structure but ignore files)
+backend/public/uploads/*
+!backend/public/uploads/.gitkeep
+
+# Package locks (optional)
+package-lock.json
+yarn.lock
+
+# Temporary and test files
+**/test-*.js
+**/temp-*.js
+**/debug-*.js
+**/setup*.js
+**/create*.js
+**/clear-*.js
+**/check-*.js
+**/redistribute-*.js
+**/remove-*.js
 
 # Editor directories and files
 .vscode/*
@@ -24,3 +51,11 @@ backend/.env
 *.njsproj
 *.sln
 *.sw?
+
+# OS generated files
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
