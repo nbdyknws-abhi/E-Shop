@@ -108,22 +108,23 @@ const Products = () => {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-7">
           {data.map((item) => (
-            <div
-              key={item._id}
-              className="bg-gradient-to-r from-slate-700 to-neutral-900 shadow rounded-lg p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-            >
+      <div
+      key={item._id}
+      className="bg-gradient-to-r from-slate-700 to-neutral-900 shadow rounded-lg p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+      >
               <div className="mb-4">
                 <ImageZoom
-                  src={`/uploads/${item.ProductImage}`}
+                
+                  src={item.ProductImage}
                   alt={item.ProductName}
                   className="w-full h-32 rounded"
-                />
+                  />
               </div>
 
               <h3
                 className="mt-2 font-medium text-gray-200 line-clamp-2"
                 title={item.ProductName}
-              >
+                >
                 {item.ProductName}
               </h3>
 
@@ -153,7 +154,7 @@ const Products = () => {
 
                     handleAddToCart(item);
                     toast.success("Added to cart! Redirecting to checkout...");
-
+                    
                     // Navigate to cart page after a short delay
                     setTimeout(() => {
                       navigate("/cart");
@@ -166,8 +167,8 @@ const Products = () => {
               </div>
             </div>
           ))}
-        </div>
-      )}
+          </div>
+        )}
     </section>
   );
 };
