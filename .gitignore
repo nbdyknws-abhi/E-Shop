@@ -57,7 +57,3 @@ yarn.lock
 ehthumbs.db
 Thumbs.db
 
-# Uploaded files (user content)
-backend/public/uploads/*
-!backend/public/uploads/.gitkeep
-!backend/public/uploads/placeholder.jpg
