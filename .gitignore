@@ -22,9 +22,6 @@ frontend/.env
 .env.test.local
 .env.production.local
 
-# Uploads directory (keep structure but ignore files)
-backend/public/uploads/*
-!backend/public/uploads/.gitkeep
 
 # Package locks (optional)
 package-lock.json
@@ -59,3 +56,8 @@ yarn.lock
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Uploaded files (user content)
+backend/public/uploads/*
+!backend/public/uploads/.gitkeep
+!backend/public/uploads/placeholder.jpg

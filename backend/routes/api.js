@@ -23,6 +23,23 @@ api.get("/allproducts", UserController.getAllProductsController);
 api.post("/userquery", UserController.userQueryController);
 api.get("/search", UserController.searchController);
 
+// Image serving route with better error handling
+api.get("/image/:filename", (req, res) => {
+  const { filename } = req.params;
+  const path = require("path");
+  const fs = require("fs");
+  
+  const imagePath = path.join(__dirname, "../public/uploads", filename);
+  
+  // Check if file exists
+  if (fs.existsSync(imagePath)) {
+    res.sendFile(imagePath);
+  } else {
+    // Send a placeholder image or 404
+    res.status(404).json({ message: "Image not found" });
+  }
+});
+
 // Protected user routes (require user authentication)
 api.post("/cart/save", auth, UserController.saveCartController);
 api.get("/cart/:userId", auth, UserController.fetchCartController);
@@ -45,7 +62,7 @@ api.put(
 api.post(
   "/add-product",
   adminAuth,
-  uploads.single("pimage"),
+  uploads.single("ProductImage"),
   AdminController.addProductController
 );
 api.get("/getproducts", adminAuth, AdminController.getProductsController);
@@ -58,7 +75,7 @@ api.get("/fetchdata/:abc", adminAuth, AdminController.editProductsController);
 api.put(
   "/productupdate/:abc",
   adminAuth,
-  uploads.single("Pimage"),
+  uploads.single("ProductImage"),
   AdminController.updateProductController
 );
 api.get("/query/reply", adminAuth, AdminController.replyQueryController);

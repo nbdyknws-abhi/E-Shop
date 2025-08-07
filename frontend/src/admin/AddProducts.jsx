@@ -7,15 +7,22 @@ import toast from "react-hot-toast";
 const AddProducts = () => {
   const navigate = useNavigate();
   const [product, setProduct] = useState({ Pname: "", Price: "", Cat: "" });
-  const [pimage, setPimage] = useState("");
+  const [productImage, setProductImage] = useState("");
 
   async function handleForm(e) {
     e.preventDefault();
+    
+    // Validate all fields including image
+    if (!product.Pname || !product.Price || !product.Cat || !productImage) {
+      toast.error("All fields including image are required");
+      return;
+    }
+
     const formdata = new FormData();
     formdata.append("Pname", product.Pname);
     formdata.append("Price", product.Price);
     formdata.append("Cat", product.Cat);
-    formdata.append("pimage", pimage);
+    formdata.append("ProductImage", productImage); // Changed field name to match backend
     
     try {
       const token = localStorage.getItem("token");
@@ -32,11 +39,11 @@ const AddProducts = () => {
         toast.success(result.message);
         navigate("/admin/products");
       } else {
-        toast.error(result.message);
+        toast.error(result.message || "Failed to add product");
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error("Network error. Please try again.");
     }
   }
   function handleChange(e) {
@@ -112,9 +119,9 @@ const AddProducts = () => {
           </label>
           <input
             type="file"
-            name="pimage"
+            name="ProductImage"
             id=""
-            onChange={(e) => setPimage(e.target.files[0])}
+            onChange={(e) => setProductImage(e.target.files[0])}
             accept="image/*"
             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none "
           />

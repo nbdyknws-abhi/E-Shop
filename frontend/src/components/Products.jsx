@@ -31,6 +31,11 @@ const Products = () => {
 
       if (response.ok) {
         setData(result.data || []);
+        // Debug: Log first product image path
+        if (result.data && result.data.length > 0) {
+          console.log("First product image:", result.data[0].ProductImage);
+          console.log("Image URL will be:", `/uploads/${result.data[0].ProductImage}`);
+        }
       } else {
         setError(result.message || "Failed to fetch products");
         console.error("Failed to fetch products:", result.message);
@@ -114,10 +119,14 @@ const Products = () => {
       >
               <div className="mb-4">
                 <ImageZoom
-                
-                  src={item.ProductImage}
+                  src={`/uploads/${item.ProductImage}`}
                   alt={item.ProductName}
-                  className="w-full h-32 rounded"
+                  className="w-full h-32 rounded object-cover"
+                  onError={(e) => {
+                    // Fallback for missing images
+                    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDIwMCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04NSA2NEwxMDAgNzlMMTE1IDY0TDEzNSA4NEg2NUw4NSA2NFoiIGZpbGw9IiNEMUQ1REIiLz4KPGNpcmNsZSBjeD0iNzUiIGN5PSI0NSIgcj0iOCIgZmlsbD0iI0QxRDVEQiIvPgo8L3N2Zz4K';
+                    e.target.alt = 'Image not available';
+                  }}
                   />
               </div>
 

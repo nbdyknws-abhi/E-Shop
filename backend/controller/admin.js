@@ -3,11 +3,53 @@ const productCollection = require("../model/product");
 const nodemailer = require("nodemailer");
 const addProductController = async (req, res) => {
   try {
-    const Pimage = req.file.filename;
+    // Debug logging
+    console.log("=== ADD PRODUCT DEBUG ===");
+    console.log("Request file:", req.file);
+    console.log("Request body:", req.body);
+    console.log("Content-Type:", req.headers["content-type"]);
+    console.log("All headers:", Object.keys(req.headers));
+    console.log("========================");
 
+    // Check if file was uploaded
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Product image is required. Please upload an image file.",
+        error: "No file received",
+      });
+    }
+
+    const Pimage = req.file.filename;
     const { Pname, Price, Cat } = req.body;
+
+    // Validate required fields
     if (!Pname || !Price || !Cat) {
-      return res.status(400).json({ message: "All fields are required " });
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Validate file type
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+    ];
+    if (!allowedTypes.includes(req.file.mimetype)) {
+      return res.status(400).json({
+        message:
+          "Invalid file type. Only JPEG, PNG, WebP, and GIF images are allowed.",
+        received: req.file.mimetype,
+      });
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (req.file.size > maxSize) {
+      return res.status(400).json({
+        message: "File too large. Maximum size is 5MB.",
+        received: `${(req.file.size / 1024 / 1024).toFixed(2)}MB`,
+      });
     }
 
     const record = new productCollection({
@@ -18,9 +60,25 @@ const addProductController = async (req, res) => {
     });
 
     await record.save();
-    res.status(200).json({ message: "Product added successfully ✅" });
+    res.status(200).json({
+      message: "Product added successfully ✅",
+      productId: record._id,
+      imageName: Pimage,
+    });
   } catch (error) {
-    console.error(error);
+    console.error("Add Product Error:", error);
+
+    // Handle specific validation errors
+    if (error.name === "ValidationError") {
+      const validationErrors = Object.values(error.errors).map(
+        (err) => err.message
+      );
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: validationErrors,
+      });
+    }
+
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -56,7 +114,13 @@ const editProductsController = async (req, res) => {
 };
 const updateProductController = async (req, res) => {
   try {
-    const { Pname, Pprice, Pcat, Pstatus } = req.body;
+    console.log("=== UPDATE PRODUCT DEBUG ===");
+    console.log("Request file:", req.file);
+    console.log("Request body:", req.body);
+    console.log("Content-Type:", req.headers["content-type"]);
+    console.log("============================");
+
+    const { Pname, Pprice, Pcat, Pstatus, removeImage } = req.body;
     const id = req.params.abc;
     const updateData = {
       ProductName: Pname,
@@ -65,9 +129,28 @@ const updateProductController = async (req, res) => {
       ProductStatus: Pstatus,
     };
 
+    // Handle image updates
     if (req.file) {
+      // Validate file type for updates too
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+      ];
+      if (!allowedTypes.includes(req.file.mimetype)) {
+        return res.status(400).json({
+          message:
+            "Invalid file type. Only JPEG, PNG, WebP, and GIF images are allowed.",
+        });
+      }
       updateData.ProductImage = req.file.filename;
+    } else if (removeImage === "true") {
+      // User wants to remove current image
+      updateData.ProductImage = null;
     }
+    // If neither new file nor remove flag, keep existing image (don't modify ProductImage field)
 
     // ✅ Correct way in Mongoose 7+
     const updatedProduct = await productCollection.findByIdAndUpdate(
