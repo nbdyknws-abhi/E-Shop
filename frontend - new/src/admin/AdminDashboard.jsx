@@ -1,11 +1,10 @@
 import React from "react";
 import Slidebar from "./Slidebar";
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { makeAdminRequest } from "../utils/authUtils";
 import toast from "react-hot-toast";
 import AdminProtectedRoute from "./AdminProtectedRoute";
 import { FaMapMarkerAlt, FaPhone, FaUser } from "react-icons/fa";
-import { ASSETS_BASE } from "../utils/api";
 
 const AdminDashboard = () => {
   const [products, setProducts] = useState([]);
@@ -62,11 +61,13 @@ const AdminDashboard = () => {
       setStatsLoading(false);
     }
   }
-  
+
   async function fetchAllOrders(page = ordersPage, limit = ordersPageSize) {
     try {
       setOrdersLoading(true);
-      const resp = await makeAdminRequest(`/admin/orders?page=${page}&limit=${limit}`);
+      const resp = await makeAdminRequest(
+        `/admin/orders?page=${page}&limit=${limit}`
+      );
       if (resp.ok) {
         const json = await resp.json();
         setOrdersList(json.orders || []);
@@ -83,19 +84,20 @@ const AdminDashboard = () => {
       setOrdersLoading(false);
     }
   }
-  
+
   useEffect(() => {
     getProducts();
     getOrdersStats({ range: "14d", days: 14 });
     fetchAllOrders(1, ordersPageSize);
   }, []);
 
-    const maxCount = orderSeries.length ? Math.max(...orderSeries.map((d) => d.count)) : 0;
-    const chartHeight = 200; // px
-    const barWidth = 20; // px 
-    const barGap = 12; // px
+  const maxCount = orderSeries.length
+    ? Math.max(...orderSeries.map((d) => d.count))
+    : 0;
+  const chartHeight = 200; // px
+  const barWidth = 20; // px
+  const barGap = 12; // px
 
-  
   return (
     <AdminProtectedRoute>
       <div className="flex">
@@ -106,26 +108,38 @@ const AdminDashboard = () => {
           </h1>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded shadow">
-              <h2 className="text-xl font-semibold text-gray-700">Total Products</h2>
+              <h2 className="text-xl font-semibold text-gray-700">
+                Total Products
+              </h2>
               {loading ? (
                 <p className="text-lg mt-3 text-gray-500">Loading...</p>
               ) : (
-                 <p className="text-3xl mt-3 font-bold text-green-700">{products.length}</p>
+                <p className="text-3xl mt-3 font-bold text-green-700">
+                  {products.length}
+                </p>
               )}
             </div>
             <div className="bg-white p-6 rounded shadow">
-              <h2 className="text-xl font-semibold text-gray-700">Total Orders</h2>
+              <h2 className="text-xl font-semibold text-gray-700">
+                Total Orders
+              </h2>
               {statsLoading ? (
                 <p className="text-lg mt-3 text-gray-500">Loading...</p>
               ) : (
-                <p className="text-3xl mt-3 font-bold text-blue-700">{ordersTotal}</p>
+                <p className="text-3xl mt-3 font-bold text-blue-700">
+                  {ordersTotal}
+                </p>
               )}
             </div>
-          <div className="bg-white p-6 rounded shadow hover:bg-indigo-400">
-              
+            <div className="bg-white p-6 rounded shadow hover:bg-indigo-400">
               <button
                 type="button"
-                onClick={() => ordersSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                onClick={() =>
+                  ordersSectionRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  })
+                }
                 className="mt-4 inline-flex items-center justify-center px-11  rounded text-xl font-semibold text-gray-700  focus:outline-none  "
               >
                 Orders Received
@@ -135,9 +149,13 @@ const AdminDashboard = () => {
 
           <div className="mt-8 bg-white p-6 rounded shadow">
             <div className="flex items-center justify-between flex-wrap gap-3">
-              <h2 className="text-xl font-semibold text-gray-700">Orders Trend</h2>
+              <h2 className="text-xl font-semibold text-gray-700">
+                Orders Trend
+              </h2>
               <div className="flex items-center gap-2">
-                <label htmlFor="range" className="text-sm text-gray-600">Range:</label>
+                <label htmlFor="range" className="text-sm text-gray-600">
+                  Range:
+                </label>
                 <select
                   id="range"
                   className="border rounded px-2 py-1 text-sm"
@@ -146,7 +164,8 @@ const AdminDashboard = () => {
                     const val = e.target.value;
                     setRange(val);
                     setStatsLoading(true);
-                    if (val === "14d") getOrdersStats({ range: "14d", days: 14 });
+                    if (val === "14d")
+                      getOrdersStats({ range: "14d", days: 14 });
                     else getOrdersStats({ range: val });
                   }}
                 >
@@ -160,7 +179,9 @@ const AdminDashboard = () => {
             {statsLoading ? (
               <p className="text-lg mt-3 text-gray-500">Loading chart...</p>
             ) : orderSeries.length === 0 ? (
-              <p className="text-gray-500 mt-4">No orders in the selected period.</p>
+              <p className="text-gray-500 mt-4">
+                No orders in the selected period.
+              </p>
             ) : (
               <div className="mt-4">
                 {/* Responsive bar chart using SVG */}
@@ -169,29 +190,62 @@ const AdminDashboard = () => {
                     role="img"
                     aria-label="Orders per day"
                     className="min-w-[640px] w-full h-auto"
-                    viewBox={`0 0 ${orderSeries.length * (barWidth + barGap) + 40} ${chartHeight + 60}`}
+                    viewBox={`0 0 ${
+                      orderSeries.length * (barWidth + barGap) + 40
+                    } ${chartHeight + 60}`}
                   >
                     {/* Axes */}
-                    <line x1="30" y1="10" x2="30" y2={chartHeight + 10} stroke="#e5e7eb" />
-                    <line x1="30" y1={chartHeight + 10} x2={orderSeries.length * (barWidth + barGap) + 30} y2={chartHeight + 10} stroke="#e5e7eb" />
+                    <line
+                      x1="30"
+                      y1="10"
+                      x2="30"
+                      y2={chartHeight + 10}
+                      stroke="#e5e7eb"
+                    />
+                    <line
+                      x1="30"
+                      y1={chartHeight + 10}
+                      x2={orderSeries.length * (barWidth + barGap) + 30}
+                      y2={chartHeight + 10}
+                      stroke="#e5e7eb"
+                    />
 
                     {/* Y-axis labels (0, max) */}
-                    <text x="0" y={chartHeight + 15} fill="#6b7280" fontSize="10">0</text>
-                    <text x="0" y="20" fill="#6b7280" fontSize="10">{maxCount}</text>
+                    <text
+                      x="0"
+                      y={chartHeight + 15}
+                      fill="#6b7280"
+                      fontSize="10"
+                    >
+                      0
+                    </text>
+                    <text x="0" y="20" fill="#6b7280" fontSize="10">
+                      {maxCount}
+                    </text>
 
                     {/* Bars and X labels */}
                     {orderSeries.map((d, i) => {
                       const x = 30 + i * (barWidth + barGap);
-                      const h = maxCount === 0 ? 0 : Math.round((d.count / maxCount) * chartHeight);
+                      const h =
+                        maxCount === 0
+                          ? 0
+                          : Math.round((d.count / maxCount) * chartHeight);
                       const y = chartHeight + 10 - h;
-                      const dateLabel = granularity === 'month'
-                        ? (() => {
-                            // d.date is YYYY-MM
-                            const [yy, mm] = d.date.split('-').map(Number);
-                            const dt = new Date(Date.UTC(yy, (mm - 1), 1));
-                            return dt.toLocaleDateString(undefined, { month: 'short', year: '2-digit' });
-                          })()
-                        : new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                      const dateLabel =
+                        granularity === "month"
+                          ? (() => {
+                              // d.date is YYYY-MM
+                              const [yy, mm] = d.date.split("-").map(Number);
+                              const dt = new Date(Date.UTC(yy, mm - 1, 1));
+                              return dt.toLocaleDateString(undefined, {
+                                month: "short",
+                                year: "2-digit",
+                              });
+                            })()
+                          : new Date(d.date).toLocaleDateString(undefined, {
+                              month: "short",
+                              day: "numeric",
+                            });
                       return (
                         <g key={d.date}>
                           <rect
@@ -201,9 +255,10 @@ const AdminDashboard = () => {
                             height={h}
                             fill="#3b82f6"
                             rx="4"
-                          >
-                          </rect>
-                          <title>{`${dateLabel}: ${d.count} order${d.count !== 1 ? 's' : ''}`}</title>
+                          ></rect>
+                          <title>{`${dateLabel}: ${d.count} order${
+                            d.count !== 1 ? "s" : ""
+                          }`}</title>
                           <text
                             x={x + barWidth / 2}
                             y={chartHeight + 30}
@@ -223,11 +278,18 @@ const AdminDashboard = () => {
           </div>
 
           {/* Orders Received List */}
-          <div ref={ordersSectionRef} className="mt-8 bg-white p-6 rounded shadow">
+          <div
+            ref={ordersSectionRef}
+            className="mt-8 bg-white p-6 rounded shadow"
+          >
             <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-              <h2 className="text-xl font-semibold text-gray-700">Orders Received</h2>
+              <h2 className="text-xl font-semibold text-gray-700">
+                Orders Received
+              </h2>
               <div className="flex items-center gap-2">
-                <label htmlFor="pageSize" className="text-sm text-gray-600">Page size:</label>
+                <label htmlFor="pageSize" className="text-sm text-gray-600">
+                  Page size:
+                </label>
                 <select
                   id="pageSize"
                   className="border rounded px-2 py-1 text-sm"
@@ -256,33 +318,68 @@ const AdminDashboard = () => {
                       <div>
                         <p className="text-sm text-gray-500">Order ID</p>
                         <p className="font-semibold">{order.orderId}</p>
-                        <p className="text-xs text-gray-500">Placed: {new Date(order.createdAt).toLocaleString()}</p>
+                        <p className="text-xs text-gray-500">
+                          Placed: {new Date(order.createdAt).toLocaleString()}
+                        </p>
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-gray-500">Total</p>
-                        <p className="text-lg font-bold text-green-700">₹{(order.totalAmount || order.amount || 0).toFixed(2)}</p>
-                        <p className="text-xs text-gray-500">Items: {order.totalQuantity || (order.items?.reduce((s,i)=>s + (i.quantity||0),0)) || 0}</p>
+                        <p className="text-lg font-bold text-green-700">
+                          ₹{(order.totalAmount || order.amount || 0).toFixed(2)}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Items:{" "}
+                          {order.totalQuantity ||
+                            order.items?.reduce(
+                              (s, i) => s + (i.quantity || 0),
+                              0
+                            ) ||
+                            0}
+                        </p>
                       </div>
                     </div>
                     {/* Customer Info */}
                     <div className="mt-4 grid md:grid-cols-3 gap-4">
                       <div className="bg-gray-50 rounded p-3">
                         <p className="text-sm font-medium mb-1">Customer</p>
-                        <p className="flex items-center gap-2 text-gray-700"><FaUser className="text-gray-500" />{order.userId?.userName || 'N/A'}</p>
-                        <p className="text-xs text-gray-600">{order.userId?.userEmail || 'N/A'}</p>
+                        <p className="flex items-center gap-2 text-gray-700">
+                          <FaUser className="text-gray-500" />
+                          {order.userId?.userName || "N/A"}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {order.userId?.userEmail || "N/A"}
+                        </p>
                         {order.userId?.phoneNumber && (
-                          <p className="flex items-center gap-2 text-xs text-gray-700 mt-1"><FaPhone className="text-gray-500" />{order.userId.phoneNumber}</p>
+                          <p className="flex items-center gap-2 text-xs text-gray-700 mt-1">
+                            <FaPhone className="text-gray-500" />
+                            {order.userId.phoneNumber}
+                          </p>
                         )}
                       </div>
                       <div className="bg-gray-50 rounded p-3">
-                        <p className="text-sm font-medium mb-1">Shipping Address</p>
+                        <p className="text-sm font-medium mb-1">
+                          Shipping Address
+                        </p>
                         {order.shippingAddress ? (
                           <div className="text-sm text-gray-700">
-                            <p className="flex items-center gap-2"><FaMapMarkerAlt className="text-gray-500" />{order.shippingAddress.fullName || order.userId?.userName || 'N/A'}</p>
-                            <p className="mt-1">{order.shippingAddress.address || 'N/A'}</p>
-                            <p className="text-xs text-gray-600">{order.shippingAddress.city || 'N/A'}, {order.shippingAddress.state || 'N/A'} - {order.shippingAddress.pincode || 'N/A'}</p>
+                            <p className="flex items-center gap-2">
+                              <FaMapMarkerAlt className="text-gray-500" />
+                              {order.shippingAddress.fullName ||
+                                order.userId?.userName ||
+                                "N/A"}
+                            </p>
+                            <p className="mt-1">
+                              {order.shippingAddress.address || "N/A"}
+                            </p>
+                            <p className="text-xs text-gray-600">
+                              {order.shippingAddress.city || "N/A"},{" "}
+                              {order.shippingAddress.state || "N/A"} -{" "}
+                              {order.shippingAddress.pincode || "N/A"}
+                            </p>
                             {order.shippingAddress.phoneNumber && (
-                              <p className="text-xs">📞 {order.shippingAddress.phoneNumber}</p>
+                              <p className="text-xs">
+                                📞 {order.shippingAddress.phoneNumber}
+                              </p>
                             )}
                           </div>
                         ) : (
@@ -291,9 +388,15 @@ const AdminDashboard = () => {
                       </div>
                       <div className="bg-gray-50 rounded p-3">
                         <p className="text-sm font-medium mb-1">Payment</p>
-                        <p className="text-sm">Method: {order.paymentMethod || 'Razorpay'}</p>
-                        <p className="text-sm">Status: {order.paymentStatus || 'completed'}</p>
-                        <p className="text-xs text-gray-600 break-all">Payment ID: {order.paymentId}</p>
+                        <p className="text-sm">
+                          Method: {order.paymentMethod || "Razorpay"}
+                        </p>
+                        <p className="text-sm">
+                          Status: {order.paymentStatus || "completed"}
+                        </p>
+                        <p className="text-xs text-gray-600 break-all">
+                          Payment ID: {order.paymentId}
+                        </p>
                       </div>
                     </div>
 
@@ -315,20 +418,80 @@ const AdminDashboard = () => {
                               <tr key={idx} className="border-t">
                                 <td className="py-2 pr-4">
                                   <div className="flex items-center gap-2">
-                                    {it.productImage && (
-                                      <img src={`${ASSETS_BASE}/uploads/${it.ProductImage}`} alt={it.productName} className="w-10 h-10 object-contain rounded" />
-                                    )}
-                                    <span className="max-w-[320px] line-clamp-2">{it.productName}</span>
+                                    {it?.productImage ||
+                                    it?.image ||
+                                    it?.productImageUrl ||
+                                    it?.imageUrl ? (
+                                      <img
+                                        src={(function () {
+                                          const raw =
+                                            it?.productImage ||
+                                            it?.image ||
+                                            it?.productImageUrl ||
+                                            it?.imageUrl;
+                                          if (!raw) return "";
+                                          return /^https?:\/\//i.test(raw)
+                                            ? raw
+                                            : `/uploads/${String(raw)
+                                                .replace(/^\/*uploads\/*/i, "")
+                                                .replace(/^\/+/, "")}`;
+                                        })()}
+                                        alt={it.productName}
+                                        className="w-10 h-10 object-contain rounded"
+                                        onError={(e) => {
+                                          e.currentTarget.style.display =
+                                            "none";
+                                          const sib =
+                                            e.currentTarget.nextElementSibling;
+                                          if (
+                                            sib &&
+                                            sib.dataset &&
+                                            sib.dataset.fallback === "img"
+                                          ) {
+                                            sib.style.display = "flex";
+                                          }
+                                        }}
+                                      />
+                                    ) : null}
+                                    <div
+                                      data-fallback="img"
+                                      style={{
+                                        display:
+                                          it?.productImage ||
+                                          it?.image ||
+                                          it?.productImageUrl ||
+                                          it?.imageUrl
+                                            ? "none"
+                                            : "flex",
+                                      }}
+                                      className="w-10 h-10 bg-gray-200 rounded items-center justify-center text-[10px] text-gray-500"
+                                    >
+                                      No Img
+                                    </div>
+                                    <span className="max-w-[320px] line-clamp-2">
+                                      {it.productName}
+                                    </span>
                                   </div>
                                 </td>
-                                <td className="py-2 pr-4">₹{(it.productPrice || 0).toFixed(2)}</td>
+                                <td className="py-2 pr-4">
+                                  ₹{(it.productPrice || 0).toFixed(2)}
+                                </td>
                                 <td className="py-2 pr-4">{it.quantity}</td>
-                                <td className="py-2 pr-4 font-medium">₹{(((it.totalPrice ?? (it.productPrice * it.quantity)) || 0)).toFixed(2)}</td>
+                                <td className="py-2 pr-4 font-medium">
+                                  ₹
+                                  {(
+                                    (it.totalPrice ??
+                                      it.productPrice * it.quantity) ||
+                                    0
+                                  ).toFixed(2)}
+                                </td>
                               </tr>
                             ))}
                             {(!order.items || order.items.length === 0) && (
                               <tr>
-                                <td className="py-2 pr-4" colSpan="4">No item details available</td>
+                                <td className="py-2 pr-4" colSpan="4">
+                                  No item details available
+                                </td>
                               </tr>
                             )}
                           </tbody>
@@ -350,11 +513,15 @@ const AdminDashboard = () => {
                   Previous
                 </button>
                 <p className="text-sm text-gray-600">
-                  Page {ordersPage} of {Math.ceil(ordersTotalCount / ordersPageSize)} ({ordersTotalCount} orders)
+                  Page {ordersPage} of{" "}
+                  {Math.ceil(ordersTotalCount / ordersPageSize)} (
+                  {ordersTotalCount} orders)
                 </p>
                 <button
                   className="px-3 py-1 border rounded disabled:opacity-50"
-                  disabled={ordersPage >= Math.ceil(ordersTotalCount / ordersPageSize)}
+                  disabled={
+                    ordersPage >= Math.ceil(ordersTotalCount / ordersPageSize)
+                  }
                   onClick={() => fetchAllOrders(ordersPage + 1, ordersPageSize)}
                 >
                   Next
@@ -369,5 +536,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
-
