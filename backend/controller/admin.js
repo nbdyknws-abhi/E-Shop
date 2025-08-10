@@ -1,5 +1,6 @@
 const queryCollection = require("../model/query");
 const productCollection = require("../model/product");
+const orderCollection = require("../model/order");
 const nodemailer = require("nodemailer");
 const addProductController = async (req, res) => {
   try {
@@ -258,11 +259,136 @@ const queryReplyController = async (req, res) => {
     }
   }
 };
+const getOrdersStatsController = async (req, res) => {
+  try {
+    // Determine range and granularity
+    const range = req.query.range; // '30d' | 'month' | 'year'
+    let days = parseInt(req.query.days);
+    let granularity = "day"; // default
+
+    const now = new Date();
+    const endUTC = new Date(Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      23, 59, 59, 999
+    ));
+
+    let startUTC;
+
+    if (range === "30d") {
+      days = 30;
+      startUTC = new Date(endUTC);
+      startUTC.setUTCDate(startUTC.getUTCDate() - (days - 1));
+      granularity = "day";
+    } else if (range === "month") {
+      // From first day of current month to today
+      startUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0));
+      days = Math.floor((endUTC - startUTC) / (24 * 60 * 60 * 1000)) + 1;
+      granularity = "day";
+    } else if (range === "year") {
+      // Last 12 months including current month
+      granularity = "month";
+      const yearAgo = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0));
+      yearAgo.setUTCMonth(yearAgo.getUTCMonth() - 11); // include 12 months
+      startUTC = yearAgo;
+    } else {
+      // Fallback to days parameter
+      days = Math.max(isNaN(days) ? 14 : days, 1);
+      startUTC = new Date(endUTC);
+      startUTC.setUTCDate(startUTC.getUTCDate() - (days - 1));
+      granularity = "day";
+    }
+
+    // Total orders (all time)
+    const totalOrders = await orderCollection.countDocuments();
+
+    // Total in selected range
+    const rangeTotal = await orderCollection.countDocuments({
+      createdAt: { $gte: startUTC, $lte: endUTC },
+    });
+
+    // Aggregate orders count within range
+    const dateFormat = granularity === "month" ? "%Y-%m" : "%Y-%m-%d";
+    const agg = await orderCollection.aggregate([
+      { $match: { createdAt: { $gte: startUTC, $lte: endUTC } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: dateFormat, date: "$createdAt", timezone: "UTC" } },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    // Build continuous series with zero-filled time buckets
+    const map = new Map(agg.map((d) => [d._id, d.count]));
+    const series = [];
+    if (granularity === "day") {
+      const totalDays = days || Math.floor((endUTC - startUTC) / (24 * 60 * 60 * 1000)) + 1;
+      for (let i = 0; i < totalDays; i++) {
+        const d = new Date(startUTC);
+        d.setUTCDate(startUTC.getUTCDate() + i);
+        const key = d.toISOString().slice(0, 10); // YYYY-MM-DD
+        series.push({ date: key, count: map.get(key) || 0 });
+      }
+    } else {
+      // month granularity: iterate 12 months from startUTC to endUTC
+      const cursor = new Date(startUTC);
+      while (cursor <= endUTC) {
+        const y = cursor.getUTCFullYear();
+        const m = String(cursor.getUTCMonth() + 1).padStart(2, "0");
+        const key = `${y}-${m}`; // YYYY-MM
+        series.push({ date: key, count: map.get(key) || 0 });
+        cursor.setUTCMonth(cursor.getUTCMonth() + 1);
+      }
+    }
+
+    const payload = {
+      totalOrders,
+      rangeTotal,
+      granularity,
+      series,
+    };
+    if (range) payload.range = range;
+    if (!range && days) payload.days = days;
+
+    res.status(200).json(payload);
+  } catch (error) {
+    console.error("Error getting orders stats:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+const getAllOrdersController = async (req, res) => {
+  try {
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit) || 50, 1), 200);
+    const skip = (page - 1) * limit;
+
+    const [orders, total] = await Promise.all([
+      orderCollection
+        .find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("userId", "userName userEmail phoneNumber address city state pincode")
+        .lean(),
+      orderCollection.countDocuments(),
+    ]);
+
+    res.status(200).json({ success: true, total, page, limit, orders });
+  } catch (error) {
+    console.error("Error fetching all orders:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 module.exports = {
   addProductController,
   getProductsController,
   deleteProductController,
   editProductsController,
+  getAllOrdersController,
+  getOrdersStatsController,
   updateProductController,
   replyQueryController,
   deleteQueryController,
