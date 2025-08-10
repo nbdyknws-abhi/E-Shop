@@ -5,6 +5,7 @@ import { makeAdminRequest } from "../utils/authUtils";
 import toast from "react-hot-toast";
 import AdminProtectedRoute from "./AdminProtectedRoute";
 import { FaMapMarkerAlt, FaPhone, FaUser } from "react-icons/fa";
+import { ASSETS_BASE } from "../utils/api";
 
 const AdminDashboard = () => {
   const [products, setProducts] = useState([]);
@@ -368,4 +369,5 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
 
