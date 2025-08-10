@@ -22,6 +22,24 @@ const AdminDashboard = () => {
   const [ordersLoading, setOrdersLoading] = useState(false);
   const ordersSectionRef = useRef(null);
 
+  // Backend origin for absolute file URLs in production (fallback keeps localhost behavior)
+  const apiOrigin = (() => {
+    const env = (
+      import.meta.env.VITE_API_ORIGIN ||
+      import.meta.env.VITE_BACKEND_URL ||
+      import.meta.env.VITE_API_URL ||
+      ""
+    ).toString();
+    if (!env) return "";
+    try {
+      const u = new URL(env);
+      return `${u.protocol}//${u.host}`;
+    } catch {
+      // If it's already an origin-like string
+      return env.replace(/\/$/, "");
+    }
+  })();
+
   async function getProducts() {
     try {
       const response = await makeAdminRequest("/getproducts");
@@ -430,11 +448,18 @@ const AdminDashboard = () => {
                                             it?.productImageUrl ||
                                             it?.imageUrl;
                                           if (!raw) return "";
-                                          return /^https?:\/\//i.test(raw)
-                                            ? raw
-                                            : `/uploads/${String(raw)
-                                                .replace(/^\/*uploads\/*/i, "")
-                                                .replace(/^\/+/, "")}`;
+                                          if (/^https?:\/\//i.test(raw))
+                                            return raw;
+                                          const cleaned = String(raw)
+                                            .replace(/^\/*uploads\/*/i, "")
+                                            .replace(/^\/+/, "");
+                                          const base = apiOrigin
+                                            ? `${apiOrigin}/uploads`
+                                            : `/uploads`;
+                                          return `${base}/${cleaned}`.replace(
+                                            /([^:])\/\/+/,
+                                            "$1/"
+                                          );
                                         })()}
                                         alt={it.productName}
                                         className="w-10 h-10 object-contain rounded"
