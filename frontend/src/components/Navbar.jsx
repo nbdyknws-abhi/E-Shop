@@ -11,7 +11,8 @@ import {
   FaUser,
   FaCog,
 } from "react-icons/fa";
-import { FiLogOut } from "react-icons/fi";
+// Removed FiLogOut import
+// import { FiLogOut } from "react-icons/fi";
 import { MdContactSupport, MdDashboard, MdSupport } from "react-icons/md";
 import { useState } from "react";
 import SearchData from "./SearchData";
@@ -31,9 +32,9 @@ export default function Navbar() {
   const cartItems = useSelector((state) => state.Cart.cartItems);
   const cartQuantity = useSelector((state) => state.Cart.TotalQuantity);
 
-  console.log(showSearch);
-  let token = localStorage.getItem("token");
-  let userType = localStorage.getItem("userType");
+  const token = localStorage.getItem("token");
+  const userType = localStorage.getItem("userType");
+  const userName = localStorage.getItem("userName");
 
   // Check if current user is admin
   const isAdmin = userType === "admin";
@@ -153,27 +154,29 @@ export default function Navbar() {
                 </span>
               </Link>
             )}
-            {token && (
-              <Link
-                to={"/my-profile"}
-                className="flex items-center gap-1 text-gray-700 hover:text-green-600"
-                title="My Profile"
-              >
-                <FaUser className="text-3xl" />
-              </Link>
-            )}
-            {!token ? (
+
+            {/* User section: icon + name or Login */}
+            {token ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  to={"/my-profile"}
+                  className="flex items-center gap-2 text-gray-700 hover:text-green-600"
+                  title="My Profile"
+                >
+                  <FaUser className="text-3xl" />
+                  <span className="hidden sm:block font-medium max-w-[160px] truncate">
+                    {userName || "My Account"}
+                  </span>
+                </Link>
+              </div>
+            ) : (
               <Link
                 to={"/login"}
-                className="flex items-center gap-1 text-gray-700 hover:text-green-600"
+                className="flex items-center gap-2 text-gray-700 hover:text-green-600 hover:shadow-md rounded-lg transition-all duration-200"
               >
                 <FaUser className="text-3xl" />
+                <span className="hidden sm:block font-medium ">LOGIN</span>
               </Link>
-            ) : (
-              <FiLogOut
-                onClick={handleLogout}
-                className="text-3xl text-red-500 hover:text-red-800 cursor-pointer"
-              />
             )}
           </div>
 
@@ -214,35 +217,37 @@ export default function Navbar() {
               to={"/admin/"}
               className="flex items-center gap-2 text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 rounded-lg cursor-pointer"
             >
-              
               <span className="font-medium">Admin Dashboard</span>
             </Link>
           )}
-          {token && (
-            <Link
-              to={"/my-profile"}
-              className="block text-gray-700 hover:text-green-600 cursor-pointer"
-            >
-              My Profile
-            </Link>
-          )}
-          {!token ? (
+
+          {/* Mobile: show name or Login link; keep Logout as a button here */}
+          {token ? (
+            <>
+              <Link
+                to={"/my-profile"}
+                className="block text-gray-700 hover:text-green-600 cursor-pointer"
+              >
+                {userName || "My Account"}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="block text-red-500 hover:text-red-800 cursor-pointer"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
             <Link
               to={"/login"}
               className="block text-gray-700 hover:text-green-600 cursor-pointer"
             >
-              Login
+              LOG IN
             </Link>
-          ) : (
-            <button
-              onClick={handleLogout}
-              className="block text-red-500 hover:text-red-800 cursor-pointer"
-            >
-              Logout
-            </button>
           )}
         </div>
       )}
+
       {/* Search Data Component */}
       {showSearch && <SearchData onClose={setShowSearch} />}
     </nav>

@@ -161,7 +161,7 @@ const Login = () => {
             type="email"
             name="LoginEmail"
             placeholder={
-              userType === "admin" ? "admin@gmail.com" : "you@example.com"
+              userType === "admin" ? "super@example.com" : "you@example.com"
             }
             id=""
             value={formData.LoginEmail}

@@ -198,12 +198,7 @@ const MyProfile = () => {
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
-          <button
-            onClick={() => navigate("/")}
-            className="text-green-600 hover:text-green-700 mb-4 flex items-center gap-2"
-          >
-            ← Back to Home
-          </button>
+          
           <div className="flex flex-col md:flex-row md:items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">My Profile</h1>
