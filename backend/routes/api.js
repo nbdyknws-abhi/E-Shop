@@ -71,6 +71,8 @@ api.delete(
   adminAuth,
   AdminController.deleteProductController
 );
+api.get("/admin/orders-stats", adminAuth, AdminController.getOrdersStatsController);
+api.get("/admin/orders", adminAuth, AdminController.getAllOrdersController);
 api.get("/fetchdata/:abc", adminAuth, AdminController.editProductsController);
 api.put(
   "/productupdate/:abc",
