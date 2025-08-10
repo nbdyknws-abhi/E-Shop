@@ -315,7 +315,7 @@ const AdminDashboard = () => {
                                 <td className="py-2 pr-4">
                                   <div className="flex items-center gap-2">
                                     {it.productImage && (
-                                      <img src={`/uploads/${it.productImage}`} alt={it.productName} className="w-10 h-10 object-contain rounded" />
+                                      <img src={`${ASSETS_BASE}/uploads/${it.ProductImage}`} alt={it.productName} className="w-10 h-10 object-contain rounded" />
                                     )}
                                     <span className="max-w-[320px] line-clamp-2">{it.productName}</span>
                                   </div>
@@ -368,3 +368,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
