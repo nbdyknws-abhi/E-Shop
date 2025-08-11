@@ -5,14 +5,11 @@ import {
   FaShoppingCart,
   FaBars,
   FaTimes,
-  FaRegUserCircle,
   FaHome,
   FaSearch,
   FaUser,
-  FaCog,
 } from "react-icons/fa";
-// Removed FiLogOut import
-// import { FiLogOut } from "react-icons/fi";
+
 import { MdContactSupport, MdDashboard, MdSupport } from "react-icons/md";
 import { useState } from "react";
 import SearchData from "./SearchData";
@@ -37,8 +34,8 @@ export default function Navbar() {
   const userType = localStorage.getItem("userType");
   const userName = localStorage.getItem("userName");
 
-  // Check if current user is admin
-  const isAdmin = userType === "admin";
+  // Check if current user is admin (must be logged in and role=admin)
+  const isAdmin = Boolean(token) && userType === "admin";
   const ScrollToTop = () => {
     window.scrollTo({
       top: 0,
