@@ -73,6 +73,7 @@ export default function Navbar() {
 
     // Clear the Redux cart state to prevent cart mixing between users
     dispatch(clearCart(userId));
+    try { localStorage.removeItem("localCart"); } catch(_) {}
 
     // Clear authentication data
     localStorage.removeItem("token");
@@ -251,3 +252,4 @@ export default function Navbar() {
     </nav>
   );
 }
+
