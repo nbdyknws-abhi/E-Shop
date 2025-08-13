@@ -1,11 +1,20 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../features/cartSlice/cartSlice";
 
 const Slidebar = () => {
   const navigate = useNavigate();
 
+  const dispatch = useDispatch();
+
   const handleLogout = () => {
+    const userId = localStorage.getItem("user");
+
+    // Clear cart state (and per-user local storage) first
+    dispatch(clearCart(userId));
+
     // Clear all stored authentication data
     localStorage.removeItem("token");
     localStorage.removeItem("user");
