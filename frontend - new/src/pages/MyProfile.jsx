@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   FaUser,
   FaEdit,
@@ -15,10 +16,17 @@ import toast from "react-hot-toast";
 import LoadingSpinner from "../components/LoadingSpinner";
 import MyOrders from "../components/MyOrders";
 import { API_BASE, authHeaders } from "../utils/api";
+import { clearCart } from "../features/cartSlice/cartSlice";
 
 const MyProfile = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("profile");
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.Cart.cartItems);
+  const cartTotals = useSelector((state) => ({
+    totalPrice: state.Cart.TotalPrice,
+    totalQuantity: state.Cart.TotalQuantity,
+  }));
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState({
     userName: "",
@@ -174,10 +182,35 @@ const MyProfile = () => {
   };
 
   const handleLogout = () => {
+    const userId = localStorage.getItem("user");
+
+    // Optional: persist cart before logout (same logic as Navbar) if there are items
+    if (userId && cartItems.length > 0) {
+      const cartData = {
+        userId,
+        cartItems,
+        totalPrice: cartTotals.totalPrice,
+        totalQuantity: cartTotals.totalQuantity,
+      };
+      fetch(`${API_BASE}/cart/save`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(cartData),
+      }).catch(() => {});
+    }
+
+    // Clear Redux cart (& per-user localStorage key) BEFORE removing user id
+    dispatch(clearCart(userId));
+
+    // Clear auth/local user data
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("userName");
     localStorage.removeItem("userType");
+
     toast.success("Logged out successfully!");
     navigate("/");
   };
@@ -477,4 +510,3 @@ const MyProfile = () => {
 };
 
 export default MyProfile;
-
