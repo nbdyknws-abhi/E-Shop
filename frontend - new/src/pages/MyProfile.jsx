@@ -177,6 +177,7 @@ const MyProfile = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("userName");
+    localStorage.removeItem("userType");
     toast.success("Logged out successfully!");
     navigate("/");
   };
@@ -476,3 +477,4 @@ const MyProfile = () => {
 };
 
 export default MyProfile;
+
