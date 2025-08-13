@@ -35,6 +35,7 @@ export const makeAuthenticatedRequest = async (url, options = {}) => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         localStorage.removeItem("userName");
+        localStorage.removeItem("userType");
         window.location.href = "/login";
         throw new Error("Authentication required");
       }
@@ -59,3 +60,4 @@ export const makeAdminRequest = async (url, options = {}) => {
     throw error;
   }
 };
+
