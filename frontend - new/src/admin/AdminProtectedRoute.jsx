@@ -44,6 +44,7 @@ const AdminProtectedRoute = ({ children }) => {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           localStorage.removeItem("userName");
+          localStorage.removeItem("userType");
           navigate("/login");
         } else {
           toast.error("Access denied. Admin privileges required.");
@@ -87,3 +88,4 @@ const AdminProtectedRoute = ({ children }) => {
 };
 
 export default AdminProtectedRoute;
+
