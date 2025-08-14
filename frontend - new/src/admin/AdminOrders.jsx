@@ -1,4 +1,13 @@
 import React, { useEffect, useState, useMemo } from "react";
+import {
+  FiPackage,
+  FiUser,
+  FiMapPin,
+  FiClock,
+  FiTruck,
+  FiShoppingCart,
+  FiHash,
+} from "react-icons/fi";
 import Slidebar from "./Slidebar";
 import AdminProtectedRoute from "./AdminProtectedRoute";
 import { makeAdminRequest } from "../utils/authUtils";
@@ -24,6 +33,16 @@ const AdminOrders = () => {
   const [statusFilter, setStatusFilter] = useState("");
   // Removed status update actions
   const [search, setSearch] = useState("");
+  const [expanded, setExpanded] = useState(() => new Set());
+
+  const toggleExpand = (id) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const fetchOrders = async (pageArg = page, statusArg = statusFilter) => {
     setLoading(true);
@@ -114,8 +133,8 @@ const AdminOrders = () => {
             </div>
           </div>
 
-          {/* Mobile cards */}
-          <div className="md:hidden space-y-4">
+          {/* Unified row style list (replaces table) */}
+          <div className="space-y-5">
             {loading ? (
               <div className="bg-white border rounded-xl p-6 text-center text-gray-400 text-sm">
                 Loading orders...
@@ -132,56 +151,143 @@ const AdminOrders = () => {
                   hour: "2-digit",
                   minute: "2-digit",
                 });
+                const expected = o.expectedDelivery
+                  ? new Date(o.expectedDelivery)
+                  : null;
+                const expectedStr = expected
+                  ? expected.toLocaleDateString()
+                  : "—";
+                const addr = o.shippingAddress || {};
+                const isOpen = expanded.has(o._id);
                 return (
                   <div
                     key={o._id}
-                    className="bg-white border rounded-xl p-4 shadow-sm flex flex-col gap-3"
+                    className="group bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <div className="font-mono text-xs text-gray-500">
-                          #{o.orderId}
-                        </div>
-                        <div className="font-medium text-gray-800 text-sm">
-                          {o.shippingAddress?.fullName || "—"}
-                        </div>
+                    {/* Header */}
+                    <div className="flex flex-wrap items-center gap-4 px-5 pt-5">
+                      <div className="flex items-center gap-2 text-sm font-mono text-indigo-600">
+                        <FiHash className="text-indigo-400" />
+                        <span className="font-semibold">{o.orderId}</span>
                       </div>
                       <span
-                        className={`shrink-0 px-2 py-1 rounded-full text-[10px] font-medium ${
+                        className={`ml-auto px-3 py-1 rounded-full text-[11px] font-medium tracking-wide ${
                           statusColors[o.status] || "bg-gray-100 text-gray-700"
                         }`}
                       >
                         {readableStatus(o.status)}
                       </span>
                     </div>
-                    <div className="text-xs text-gray-600 space-y-1">
-                      {o.items.slice(0, 2).map((it) => (
-                        <div key={it.productId} className="truncate">
-                          {it.productName} × {it.quantity}
-                        </div>
-                      ))}
-                      {o.items.length > 2 && (
-                        <div className="text-[10px] text-gray-400">
-                          +{o.items.length - 2} more items
-                        </div>
-                      )}
+                    {/* Metrics */}
+                    <div className="mt-4 px-5 flex flex-wrap gap-2 text-[11px]">
+                      <div className="flex items-center gap-1 bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full">
+                        <FiShoppingCart /> Qty: {o.totalQuantity}
+                      </div>
+                      <div className="flex items-center gap-1 bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full">
+                        <FiPackage /> ₹{o.totalAmount.toLocaleString()}
+                      </div>
+                      <div className="flex items-center gap-1 bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full">
+                        <FiTruck />{" "}
+                        {expectedStr === "—" ? "ETA —" : expectedStr}
+                      </div>
+                      <div className="flex items-center gap-1 bg-slate-50 text-slate-600 px-2.5 py-1 rounded-full">
+                        <FiClock /> {dateStr} {timeStr}
+                      </div>
                     </div>
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 border-t pt-2">
-                      <div>
-                        <span className="font-semibold text-gray-700">
-                          Qty:
-                        </span>{" "}
-                        {o.totalQuantity}
+                    {/* Body grid */}
+                    <div className="mt-4 px-5 pb-4 grid sm:grid-cols-3 gap-4 text-xs">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1 font-semibold text-gray-700 text-[11px] uppercase tracking-wide">
+                          <FiUser className="text-gray-400" /> Customer
+                        </div>
+                        <div className="text-gray-800 font-medium">
+                          {o.shippingAddress?.fullName || "—"}
+                        </div>
+                        <div className="text-gray-500">
+                          {addr.phoneNumber || "—"}
+                        </div>
+                        <div className="text-gray-500">
+                          {o.paymentMethod || "—"} ({o.paymentStatus || "—"})
+                        </div>
                       </div>
-                      <div>
-                        <span className="font-semibold text-gray-700">
-                          Amount:
-                        </span>{" "}
-                        ₹{o.totalAmount.toLocaleString()}
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1 font-semibold text-gray-700 text-[11px] uppercase tracking-wide">
+                          <FiMapPin className="text-gray-400" /> Shipping
+                        </div>
+                        <div className="text-gray-600 leading-snug">
+                          {addr.address ? (
+                            <>
+                              {addr.address}
+                              {addr.city && ", " + addr.city}
+                              {addr.state && ", " + addr.state}
+                              {addr.pincode && " - " + addr.pincode}
+                              {addr.landmark && (
+                                <span className="block text-gray-400">
+                                  {addr.landmark}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            "—"
+                          )}
+                        </div>
+                        <div className="text-gray-500 mt-1">
+                          Subtotal: ₹
+                          {o.subtotal?.toLocaleString?.() || o.subtotal}
+                        </div>
+                        {o.shippingCost !== undefined && (
+                          <div className="text-gray-500">
+                            Shipping: ₹
+                            {o.shippingCost?.toLocaleString?.() ||
+                              o.shippingCost}
+                          </div>
+                        )}
                       </div>
-                      <div className="ml-auto text-right">
-                        <div>{dateStr}</div>
-                        <div>{timeStr}</div>
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1 font-semibold text-gray-700 text-[11px] uppercase tracking-wide">
+                            <FiPackage className="text-gray-400" /> Items (
+                            {o.items.length})
+                          </div>
+                          <button
+                            onClick={() => toggleExpand(o._id)}
+                            className="text-[11px] px-2 py-1 rounded border border-gray-200 hover:border-indigo-400 hover:text-indigo-600 transition"
+                          >
+                            {isOpen ? "Hide" : "View"}
+                          </button>
+                        </div>
+                        <div className="relative">
+                          <div
+                            className={`space-y-1 mt-1 ${
+                              !isOpen ? "max-h-12 overflow-hidden" : ""
+                            }`}
+                          >
+                            {o.items.map((it) => (
+                              <div
+                                key={it.productId}
+                                className="flex justify-between gap-3 text-gray-600"
+                              >
+                                <span className="truncate flex-1">
+                                  {it.productName}
+                                </span>
+                                <span className="text-gray-400">
+                                  ×{it.quantity}
+                                </span>
+                                <span className="text-gray-500">
+                                  ₹
+                                  {(
+                                    it.productPrice * it.quantity
+                                  ).toLocaleString()}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                          {!isOpen && o.items.length > 2 && (
+                            <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white via-white/80 to-transparent flex items-end justify-center text-[10px] text-gray-400">
+                              +{o.items.length - 2} more
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -213,123 +319,7 @@ const AdminOrders = () => {
             )}
           </div>
 
-          {/* Desktop table */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hidden md:block">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-100 text-gray-700 text-xs uppercase">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Order</th>
-                    <th className="px-4 py-3 text-left">Customer</th>
-                    <th className="px-4 py-3 text-left">Items</th>
-                    <th className="px-4 py-3 text-left">Qty</th>
-                    <th className="px-4 py-3 text-left">Amount</th>
-                    <th className="px-4 py-3 text-left">Status</th>
-                    <th className="px-4 py-3 text-left">Placed</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr>
-                      <td
-                        colSpan="7"
-                        className="px-4 py-10 text-center text-gray-400"
-                      >
-                        Loading orders...
-                      </td>
-                    </tr>
-                  ) : filteredOrders.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan="7"
-                        className="px-4 py-10 text-center text-gray-500"
-                      >
-                        No orders found.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredOrders.map((o) => {
-                      const date = new Date(o.createdAt);
-                      const dateStr = date.toLocaleDateString();
-                      const timeStr = date.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      });
-                      return (
-                        <tr
-                          key={o._id}
-                          className="border-t hover:bg-gray-50 transition"
-                        >
-                          <td className="px-4 py-3 font-mono text-xs">
-                            #{o.orderId}
-                          </td>
-                          <td className="px-4 py-3">
-                            {o.shippingAddress?.fullName || "—"}
-                          </td>
-                          <td className="px-4 py-3 max-w-xs">
-                            <div className="space-y-1">
-                              {o.items.slice(0, 3).map((it) => (
-                                <div key={it.productId} className="truncate">
-                                  {it.productName} × {it.quantity}
-                                </div>
-                              ))}
-                              {o.items.length > 3 && (
-                                <div className="text-xs text-gray-400">
-                                  +{o.items.length - 3} more
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">{o.totalQuantity}</td>
-                          <td className="px-4 py-3 font-semibold">
-                            ₹{o.totalAmount.toLocaleString()}
-                          </td>
-                          <td className="px-4 py-3">
-                            <span
-                              className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide ${
-                                statusColors[o.status] ||
-                                "bg-gray-100 text-gray-700"
-                              }`}
-                            >
-                              {readableStatus(o.status)}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-xs text-gray-500">
-                            {dateStr}
-                            <br />
-                            {timeStr}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-            {!loading && pages > 1 && (
-              <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50 text-sm">
-                <div className="text-gray-500">
-                  Page {page} of {pages}
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="px-3 py-1.5 bg-white border rounded disabled:opacity-40 hover:bg-gray-100"
-                  >
-                    Prev
-                  </button>
-                  <button
-                    onClick={() => setPage((p) => Math.min(pages, p + 1))}
-                    disabled={page === pages}
-                    className="px-3 py-1.5 bg-white border rounded disabled:opacity-40 hover:bg-gray-100"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* (Table removed) */}
         </div>
       </div>
     </AdminProtectedRoute>
