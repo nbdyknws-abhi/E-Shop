@@ -3,6 +3,8 @@
 A comprehensive and modern **MERN Stack E-Shop Application** featuring user authentication, product listings, shopping cart functionality, and an administrative dashboard. It utilizes a sleek design with Tailwind CSS, Redux Toolkit for state management, reusable components, and dynamic product image support.
 
 ---
+## ☯ Live Demo: https://chopper-town.onrender.com/
+---
 
 ## 🚀 Features
 
