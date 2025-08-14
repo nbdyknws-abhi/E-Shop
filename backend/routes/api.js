@@ -1,4 +1,5 @@
-const api = require("express").Router();
+const express = require("express");
+const api = express.Router();
 const UserController = require("../controller/user.js");
 const AdminController = require("../controller/admin.js");
 const uploads = require("../middleware/multer.js");
@@ -28,9 +29,9 @@ api.get("/image/:filename", (req, res) => {
   const { filename } = req.params;
   const path = require("path");
   const fs = require("fs");
-  
+
   const imagePath = path.join(__dirname, "../public/uploads", filename);
-  
+
   // Check if file exists
   if (fs.existsSync(imagePath)) {
     res.sendFile(imagePath);
@@ -86,5 +87,14 @@ api.delete(
 );
 api.get("/getquery/:abc", adminAuth, AdminController.fetchQueryController);
 api.post("/queryreply/:abc", adminAuth, AdminController.queryReplyController);
+// Order statistics for dashboard
+api.get("/orders-stats", adminAuth, AdminController.getOrderStatsController);
+// Order management
+api.get("/orders", adminAuth, AdminController.getAllOrdersController);
+api.patch(
+  "/orders/:id/status",
+  adminAuth,
+  AdminController.updateOrderStatusController
+);
 
 module.exports = api;

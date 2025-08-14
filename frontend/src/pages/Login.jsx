@@ -82,6 +82,8 @@ const Login = () => {
         localStorage.setItem("token", result.token);
         localStorage.setItem("user", result.data._id);
         localStorage.setItem("userName", result.data.userName);
+        // Ensure any previous admin flag is overridden so Navbar hides admin button
+        localStorage.setItem("userType", "user");
 
         // Load user-specific cart
         dispatch(loadUserCart(result.data._id));

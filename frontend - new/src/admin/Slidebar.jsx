@@ -38,6 +38,12 @@ const Slidebar = () => {
         >
           💬 Manage Queries
         </Link>
+        <Link
+          to={"/admin/orders"}
+          className="block hover:text-green-400 transition-colors"
+        >
+          🧾 Manage Orders
+        </Link>
 
         <hr className="border-gray-600 my-4" />
 

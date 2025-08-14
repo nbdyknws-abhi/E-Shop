@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { FaTimes } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { FaMinus, FaPlus } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+import { FaTimes, FaMinus, FaPlus } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { API_BASE, ASSETS_BASE, authHeaders } from "../utils/api";
 import {
@@ -20,15 +19,137 @@ import toast from "react-hot-toast";
 
 const Cart = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [checkAuth, setCheckAuth] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
   const cartData = useSelector((state) => state.Cart.cartItems);
   const cartAllValue = useSelector((state) => state.Cart);
   const { loading } = useSelector((state) => state.Cart);
-  const dispatch = useDispatch();
 
-  function handlePayment() {
+  // =============================
+  // INITIALIZE CART ON MOUNT
+  // =============================
+  useEffect(() => {
+    const initializeCart = async () => {
+      const userId = localStorage.getItem("user");
+      const token = localStorage.getItem("token");
+
+      if (!token || !userId) {
+        dispatch(clearCart(null));
+        toast.error("Please login to view your cart.");
+        navigate("/login");
+        return;
+      }
+
+      setCheckAuth(true);
+
+      // Load from localStorage first
+      dispatch(loadUserCart(userId));
+      setIsInitialized(true);
+
+      // Fetch from backend if local cart is empty
+      const localCart = JSON.parse(
+        localStorage.getItem(`localCart_${userId}`) || "[]"
+      );
+      if (localCart.length === 0) {
+        try {
+          await dispatch(fetchCart(userId)).unwrap();
+        } catch (error) {
+          console.error("Failed to fetch cart:", error);
+        }
+      }
+    };
+
+    if (!isInitialized) {
+      initializeCart();
+    }
+  }, [dispatch, navigate, isInitialized]);
+
+  // =============================
+  // AUTO-SAVE CART (DEBOUNCED)
+  // =============================
+  useEffect(() => {
+    if (!isInitialized || !checkAuth) return;
+
+    const userId = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+
+    if (token && userId) {
+      const saveTimeout = setTimeout(() => {
+        dispatch(
+          saveCart({
+            userId: userId,
+            cartItems: cartData,
+            totalPrice: cartAllValue.TotalPrice,
+            totalQuantity: cartAllValue.TotalQuantity,
+          })
+        );
+      }, 2000);
+
+      return () => clearTimeout(saveTimeout);
+    }
+  }, [
+    cartData,
+    cartAllValue.TotalPrice,
+    cartAllValue.TotalQuantity,
+    dispatch,
+    isInitialized,
+    checkAuth,
+  ]);
+
+  // =============================
+  // CART ACTIONS
+  // =============================
+  const handleIncrementQuantity = (item) => {
+    dispatch(IncrementQuantity(item));
+  };
+
+  const handleDecrementQuantity = (item) => {
+    dispatch(DecrementQuantity(item));
+  };
+
+  const handleDeleteItem = async (item) => {
+    // Optimistic update
+    dispatch(deleteCartItem(item));
+    toast.success(`${item.ProductName} removed from cart`);
+
+    const userId = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+
+    if (token && userId) {
+      const updatedCartItems = cartData.filter(
+        (cartItem) => cartItem._id !== item._id
+      );
+
+      const newTotals = updatedCartItems.reduce(
+        (acc, cartItem) => {
+          const price = parseFloat(cartItem.ProductPrice) || 0;
+          const quantity = parseInt(cartItem.quantity) || 0;
+          acc.totalPrice += price * quantity;
+          acc.totalQuantity += quantity;
+          return acc;
+        },
+        { totalPrice: 0, totalQuantity: 0 }
+      );
+
+      try {
+        await dispatch(
+          saveCart({
+            userId: userId,
+            cartItems: updatedCartItems,
+            totalPrice: parseFloat(newTotals.totalPrice.toFixed(2)),
+            totalQuantity: newTotals.totalQuantity,
+          })
+        ).unwrap();
+      } catch (error) {
+        console.error("Failed to save cart after deletion:", error);
+      }
+    }
+  };
+
+  const handlePayment = () => {
     const amount = Number((cartAllValue.TotalPrice || 0).toFixed(2));
     const currency = "INR";
     const receipt = "receipet#1";
@@ -96,8 +217,24 @@ const Cart = () => {
         console.error("Order creation error:", error);
         toast.error("Failed to create order. Please try again.");
       });
+  };
+
+  // =============================
+  // LOADING OVERLAY WHILE INIT
+  // =============================
+  if (!checkAuth || !isInitialized) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg relative mx-4">
+          <LoadingSpinner size="medium" message="Loading cart..." />
+        </div>
+      </div>
+    );
   }
 
+  // =============================
+  // MAIN RENDER
+  // =============================
   return (
     <div className="fixed inset-0 bg-black z-50 bg-opacity-90 backdrop-blur-sm flex justify-center items-center">
       <div className="bg-slate-200 w-full max-w-2xl p-6 rounded-xl shadow-lg relative overflow-y-auto max-h-[90vh] mx-4">

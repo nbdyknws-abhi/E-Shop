@@ -1,6 +1,7 @@
 const queryCollection = require("../model/query");
 const productCollection = require("../model/product");
 const nodemailer = require("nodemailer");
+const orderCollection = require("../model/order");
 const addProductController = async (req, res) => {
   try {
     // Debug logging
@@ -258,6 +259,115 @@ const queryReplyController = async (req, res) => {
     }
   }
 };
+
+const getOrderStatsController = async (req, res) => {
+  try {
+    // Aggregate daily counts & revenue
+    const dailyAgg = await orderCollection.aggregate([
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          count: { $sum: 1 },
+          revenue: { $sum: "$totalAmount" },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    const totalOrders = dailyAgg.reduce((a, d) => a + d.count, 0);
+    const totalRevenue = dailyAgg.reduce((a, d) => a + d.revenue, 0);
+
+    const daily = dailyAgg.map((d) => ({
+      date: d._id,
+      count: d.count,
+      revenue: d.revenue,
+    }));
+
+    res.status(200).json({
+      totalOrders,
+      totalRevenue,
+      daily,
+    });
+  } catch (error) {
+    console.error("Order stats error:", error);
+    res.status(500).json({ message: "Failed to fetch order stats" });
+  }
+};
+
+// GET /api/orders (admin) - list all orders with optional status filter & pagination
+const getAllOrdersController = async (req, res) => {
+  try {
+    let { status, page = 1, limit = 50 } = req.query;
+    page = parseInt(page) || 1;
+    limit = Math.min(parseInt(limit) || 50, 200); // cap limit to prevent abuse
+
+    const filter = {};
+    if (status) {
+      filter.status = status;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [orders, total] = await Promise.all([
+      orderCollection
+        .find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      orderCollection.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      limit,
+      orders,
+    });
+  } catch (error) {
+    console.error("Get all orders error:", error);
+    res.status(500).json({ message: "Failed to fetch orders" });
+  }
+};
+
+// PATCH /api/orders/:id/status (admin) - update order status
+const updateOrderStatusController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const allowedStatuses = [
+      "pending",
+      "confirmed",
+      "processing",
+      "shipped",
+      "delivered",
+      "cancelled",
+    ];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const updated = await orderCollection.findByIdAndUpdate(
+      id,
+      { status, updatedAt: new Date() },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "Order status updated", order: updated });
+  } catch (error) {
+    console.error("Update order status error:", error);
+    res.status(500).json({ message: "Failed to update order status" });
+  }
+};
 module.exports = {
   addProductController,
   getProductsController,
@@ -268,4 +378,7 @@ module.exports = {
   deleteQueryController,
   fetchQueryController,
   queryReplyController,
+  getOrderStatsController,
+  getAllOrdersController,
+  updateOrderStatusController,
 };

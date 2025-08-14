@@ -16,6 +16,7 @@ import EditProducts from "./admin/EditProducts";
 import Contact from "./pages/Contact";
 import AdminQuery from "./admin/AdminQuery";
 import AdminReply from "./admin/AdminReply";
+import AdminOrders from "./admin/AdminOrders";
 import AnimatedLoadingBar from "./components/AnimatedLoadingBar";
 import RouteLoader from "./components/RouteLoader";
 import NotFound from "./pages/NotFound";
@@ -66,6 +67,7 @@ const App = () => {
           <Route path="/admin/edit-product/:id" element={<EditProducts />} />
           <Route path="/admin/admin-query" element={<AdminQuery />} />
           <Route path="/admin/admin-reply/:id" element={<AdminReply />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
 
           {/* 404 Route - Must be last */}
           <Route path="*" element={<NotFound />} />

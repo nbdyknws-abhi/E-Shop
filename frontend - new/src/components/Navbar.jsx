@@ -28,7 +28,8 @@ export default function Navbar() {
 
   // Get cart data from Redux store
   const cartItems = useSelector((state) => state.Cart.cartItems);
-  const cartQuantity = useSelector((state) => state.Cart.TotalQuantity);
+  const cartQuantity = useSelector((state) => state.Cart.TotalQuantity); // total units (kept for other pages)
+  const distinctCount = cartItems.length; // number of unique products
 
   const token = localStorage.getItem("token");
   const userType = localStorage.getItem("userType");
@@ -127,9 +128,9 @@ export default function Navbar() {
               className="text-gray-700 hover:text-green-600 relative"
             >
               <FaShoppingCart className="text-3xl" />
-              {cartQuantity > 0 && (
+              {distinctCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartQuantity}
+                  {distinctCount}
                 </span>
               )}
             </Link>
@@ -148,7 +149,7 @@ export default function Navbar() {
               >
                 <MdDashboard className="text-2xl" />
                 <span className="text-sm font-medium hidden lg:block">
-                  Admin
+                  Dashboard
                 </span>
               </Link>
             )}
@@ -201,7 +202,7 @@ export default function Navbar() {
             to={"/cart"}
             className="block text-gray-700 hover:text-green-600 cursor-pointer relative"
           >
-            Cart {cartQuantity > 0 && `(${cartQuantity})`}
+            Cart {distinctCount > 0 && `(${distinctCount})`}
           </Link>
           <Link
             to={"/contact"}
@@ -226,7 +227,7 @@ export default function Navbar() {
                 to={"/my-profile"}
                 className="block text-gray-700 hover:text-green-600 cursor-pointer"
               >
-                {userName || "My Account"}
+                My Account
               </Link>
               <button
                 onClick={handleLogout}
@@ -240,7 +241,7 @@ export default function Navbar() {
               to={"/login"}
               className="block text-gray-700 hover:text-green-600 cursor-pointer"
             >
-              LOG IN
+              Login
             </Link>
           )}
         </div>
