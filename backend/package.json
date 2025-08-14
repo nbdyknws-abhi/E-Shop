@@ -9,7 +9,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js",
-    "build": "cd frontendProduction && npm install && npm run build",
     "test-atlas": "node test-atlas-connection.js"
   },
   "dependencies": {
