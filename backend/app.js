@@ -1,12 +1,17 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const app = express();
+const path = require("path");
 const mongoose = require("mongoose");
+
 dotenv.config();
+
+const app = express();
 const apiRouter = require("./routes/api.js");
 
+// --------------------
 // CORS Configuration
+// --------------------
 const corsOptions = {
   origin: process.env.FRONTEND_URL || "http://localhost:5173",
   credentials: true,
@@ -15,10 +20,33 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// --------------------
+// Middleware
+// --------------------
 app.use(express.static("public"));
 app.use(express.json({ limit: "5000mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5000mb" }));
+
+// --------------------
+// API Routes
+// --------------------
 app.use("/api", apiRouter);
+
+// --------------------
+// Serve Frontend (React)
+// --------------------
+const frontendPath = path.join(__dirname, "frontend - new", "build");
+app.use(express.static(frontendPath));
+
+// Any non-API route should return index.html
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
+
+// --------------------
+// MongoDB Connection
+// --------------------
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => {
@@ -28,6 +56,10 @@ mongoose
   .catch((err) => {
     console.error("MongoDB connection error:", err);
   });
+
+// --------------------
+// Start Server
+// --------------------
 let port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
