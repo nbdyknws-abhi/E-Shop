@@ -31,12 +31,27 @@ const AdminOrders = () => {
       const qs = new URLSearchParams({ page: pageArg, limit });
       if (statusArg) qs.append("status", statusArg);
       const res = await makeAdminRequest(`/orders?${qs.toString()}`);
-      const data = await res.json();
-      if (res.ok) {
+      let data = null;
+      const contentType = res.headers.get("content-type") || "";
+      const isJson = contentType.includes("application/json");
+      if (isJson) {
+        try {
+          data = await res.json();
+        } catch (e) {
+          console.warn("Failed to parse JSON for /orders response", e);
+        }
+      }
+
+      if (res.ok && data) {
         setOrders(data.orders || []);
         setPages(data.pages || 1);
+      } else if (res.status === 404) {
+        // Likely backend deployment missing the new route
+        setOrders([]);
+        setPages(1);
+        toast.error("Orders endpoint not found (deploy backend update?)");
       } else {
-        toast.error(data.message || "Failed to load orders");
+        toast.error((data && data.message) || "Failed to load orders");
       }
     } catch (e) {
       console.error(e);

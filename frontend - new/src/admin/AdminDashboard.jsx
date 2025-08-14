@@ -48,11 +48,21 @@ const AdminDashboard = () => {
   async function getOrderStats() {
     try {
       const res = await makeAdminRequest("/orders-stats");
-      if (res.ok) {
-        const data = await res.json();
+      const contentType = res.headers.get("content-type") || "";
+      let data = null;
+      if (contentType.includes("application/json")) {
+        try {
+          data = await res.json();
+        } catch (e) {
+          console.warn("Failed to parse order stats JSON", e);
+        }
+      }
+      if (res.ok && data) {
         setOrderStats(data);
+      } else if (res.status === 404) {
+        toast.error("Stats endpoint not found (deploy backend update?)");
       } else {
-        toast.error("Failed to fetch order stats");
+        toast.error((data && data.message) || "Failed to fetch order stats");
       }
     } catch (e) {
       console.error(e);
