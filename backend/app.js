@@ -33,16 +33,7 @@ app.use(express.urlencoded({ extended: true, limit: "5000mb" }));
 // --------------------
 app.use("/api", apiRouter);
 
-// --------------------
-// Serve Frontend (React)
-// --------------------
-const frontendPath = path.join(__dirname, "frontend - new", "build");
-app.use(express.static(frontendPath));
-
-// Any non-API route should return index.html
-app.get("*", (req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
-});
+// Frontend is deployed separately; remove catch-all to avoid Express 5 path-to-regexp wildcard issues.
 
 // --------------------
 // MongoDB Connection
