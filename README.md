@@ -7,6 +7,12 @@ A comprehensive and modern **MERN Stack E-Shop Application** featuring user auth
 PS : might take 1-2min to load server
 
 ---
+## Admin Panel Demo
+
+![Admin Panel Demo](ChopperTown_AdminPanel.gif)
+
+
+---
 
 ## 🚀 Features
 
