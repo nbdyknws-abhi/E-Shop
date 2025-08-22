@@ -182,8 +182,8 @@ const Contact = () => {
                   <FaEnvelope className="text-green-500 text-xl mt-1 mr-4" />
                   <div>
                     <h4 className="font-semibold text-gray-800">Email</h4>
-                    <p className="text-gray-600">support@choppertown.com</p>
-                    <p className="text-gray-600">info@choppertown.com</p>
+                    <p className="text-gray-600">contact.choppertown@proton.me</p>
+                    <p className="text-gray-600">nobodyknows.abhishek@gmail.com</p>
                   </div>
                 </div>
 
@@ -192,7 +192,7 @@ const Contact = () => {
                   <div>
                     <h4 className="font-semibold text-gray-800">Phone</h4>
                     <p className="text-gray-600">+91 94331 37660</p>
-                    <p className="text-gray-600">+91 98765 43210</p>
+                    <p className="text-gray-600">+91 72784 63021</p>
                   </div>
                 </div>
 
@@ -201,7 +201,7 @@ const Contact = () => {
                   <div>
                     <h4 className="font-semibold text-gray-800">Address</h4>
                     <p className="text-gray-600">123 Commerce Street</p>
-                    <p className="text-gray-600">Kolkata, West Bengal 700001</p>
+                    <p className="text-gray-600">Kolkata, West Bengal 700064</p>
                     <p className="text-gray-600">India</p>
                   </div>
                 </div>
