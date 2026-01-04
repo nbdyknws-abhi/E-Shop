@@ -12,14 +12,31 @@ const apiRouter = require("./routes/api.js");
 // --------------------
 // CORS Configuration
 // --------------------
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://abhishekverma.codes",
+  "https://www.abhishekverma.codes",
+  "https://chopper-town.onrender.com"
+];
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: function (origin, callback) {
+    // allow server-to-server or curl requests (no origin)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS not allowed for this origin: " + origin));
+    }
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
+
 
 // --------------------
 // Middleware
